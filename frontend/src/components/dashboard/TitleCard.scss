@@ -1,0 +1,38 @@
+.bg-c-green {
+    background: linear-gradient(45deg, #2ed8b6, #59e0c5);
+  }
+  
+  .order-card {
+    color: #fff;
+  }
+  
+  .card {
+    border-radius: 5px;
+    border: none;
+    transition: all 0.3s ease-in-out;
+    height: 12rem;
+  }
+  
+  .card .card-block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 1.5rem;
+    padding-bottom: 1.5rem;
+    padding-top: 1.5rem;
+  }
+  
+  .card-content {
+    flex: 1;
+  }
+  
+  .card-image { 
+    overflow: hidden;
+  }
+  
+  .card-image img {
+    width: 100%;
+    height: auto;
+    object-fit: fill;
+  }
+  

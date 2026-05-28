@@ -1,0 +1,27 @@
+$primary-color:#181c2e;
+$secondary-color:#f7f7fe;
+$secondary-color-hover:#bab9be;
+$tertiary-color:#C8E3FF;
+$ac-font-color: #ffffff;
+$ac-quaternary-color:#F5F8FA;
+
+$registration-bg: #F3F6F9;
+$input-label: #3F4254;
+$dashboard-bg: #F2F3F7;
+$text-color-light: #979797;
+$thead-bg: #ebebeb;
+
+:root {
+    --primary-color: #{$primary-color};
+    --secondary-color: #{$secondary-color};
+    --secondary-color-hover: #{$secondary-color-hover};
+    --tertiary-color: #{$tertiary-color};
+    --ac-quaternary-color: #{$ac-quaternary-color};
+    --ac-font-color: #{$ac-font-color};
+
+    --registration-bg: #{$registration-bg};
+    --input-label: #{$input-label};
+    --dashboard-bg: #{$dashboard-bg};
+    --text-color-light: #{$text-color-light};
+    --thead-bg: #{$thead-bg};
+  }

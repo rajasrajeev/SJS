@@ -1,0 +1,256 @@
+@import 'style_variables';
+
+body {
+  transition: direction 0.3s ease,
+  text-align 0.3s ease; /* Smooth transition */
+}
+
+.login-banner{
+  background-color: $primary-color;
+  height: 100vh;
+  background-image: url('./assets/login_side_pic.png');
+}
+
+.login-content {
+  margin-top: 50%;
+}
+
+.login-illustration {
+  width: 100%;
+}
+
+.login-form {
+  width: 50%;
+}
+
+@media (max-width: 960px) {
+  .login-banner{
+    height: 100%;
+  }
+
+  .login-content {
+    margin-top: 5%;
+    margin-bottom: 20px;
+  }
+
+  .login-illustration {
+    width: 0;
+  }
+
+  .login-form {
+    width: 80%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 915px) {
+  .login-banner {
+    height: 100vh;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1280px) {
+  .login-banner {
+    height: 100vh;
+  }
+
+  .login-content {
+    margin-top: 5%;
+  }
+}
+
+.welcome-text{
+  color: white;
+  font-size: 22px;
+  font-family: 'Regular';
+}
+
+.new-here{
+  color: #A7A8BB;
+  font-size: 18px;
+  font-family: 'Medium';
+}
+
+.new-here-link{
+  font-size: 18px;
+  font-family: 'SemiBold';
+}
+
+
+.footer-label {
+  font-size: 16px;
+  font-family: 'SemiBold';
+}
+
+.primary-font-color{
+  color:$primary-color;
+}
+.sign-in{
+background-color: $primary-color;
+color: aliceblue;
+}
+
+.sign-in-footer{
+  margin-top: 15%;
+  margin-left: 35%;
+  width: 30%;
+  color: #B5B5C3;
+}
+
+.profile-name {
+  color: white;
+  font-size: 16px;
+  margin-right: 5px;
+}
+
+.profile-role {
+  color: white;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.profile-icon {
+  background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+  color: white;
+  font-size: 18px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.signin-title {
+  font-family: 'SemiBold';
+  font-size: 30px;
+}
+
+.forgot-password {
+  font-family: 'Bold';
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.try-again {
+  font-family: 'Medium';
+  font-size: 14px;
+  color: #5E6278;
+}
+
+/* Styles for user registration screens*/
+  .form-content {
+    background-color: $registration-bg;
+    padding-top: 3%;
+  }
+
+  .li-count {
+    width: 50px;
+    height: 50px;
+    background-color: #F3F6F9;
+    border-radius: 50px;
+    text-align: center;
+    padding-top: 13px;
+    font-family: 'SemiBold';
+    font-size: 18px;
+  }
+
+  .reg-tab {
+    cursor: pointer;
+    margin-bottom: 20px;
+
+    .tab-title {
+      font-family: 'Medium';
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+    .tab-desc {
+      font-family: 'Medium';
+      font-size: 12px;
+    }
+
+    .normal {
+      color: #B5B5C3;
+    }
+    
+    .title-normal {
+      color: #181C32;
+    }
+
+    .title-finish {
+      color: #B5B5C3;
+    }
+
+    .active {
+      background-color: #D7F9EF;
+      color: #0BB783;
+    }
+
+  }
+/* END */
+
+
+/* Mod Table */
+.mod-table {
+  margin-top: 10px;
+  width: 100%;
+}
+
+.mod-table th, 
+.mod-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  
+}
+
+:root[dir="ltr"] {
+  .mod-table th, .mod-table td {
+    text-align: left;
+  }
+}
+
+:root[dir="rtl"] {
+  .mod-table th, .mod-table td {
+    text-align: right;
+  }
+}
+
+
+.mod-table thead {
+  background-color: $thead-bg !important;
+}
+
+.mod-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.mod-table td i {
+  margin-right: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* END */
+
+.border-box {
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+  border: 1px solid #ccc;
+}
+
+.ded-table {
+  height: 300px;
+  overflow-y: scroll;
+}
+
+// fn an cetre
+#attendance-fn-an {
+  .rdt_TableCol {
+    justify-content: center !important;
+    width: 120px;
+  }
+  .rdt_TableCell {
+    text-align: center;
+    justify-content: center !important;
+  }
+}

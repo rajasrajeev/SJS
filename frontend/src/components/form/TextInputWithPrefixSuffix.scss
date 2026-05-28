@@ -1,0 +1,122 @@
+.same-row {
+  display: flex ;
+  flex-direction: row ;
+
+  label {
+    width: 200px ;
+    margin-top: 8px ;
+  }
+}
+
+@media (max-width: 960px) {
+  .same-row {
+    display: flex ;
+    flex-direction: column ;
+  
+    label {
+      font-size: 14px;
+      color: #555;
+      // font-weight: 600;
+      margin-bottom: 5px;
+      width: auto;
+    }
+  }
+}
+
+
+
+/* Wrapper */
+.text-input-wrapper {
+  // display: flex;
+  // flex-direction: column;
+  margin-bottom: 10px;
+}
+
+/* Label */
+.text-input-label {
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+  // font-weight: 600;
+}
+
+/* Red Asterisk for Required */
+.required {
+  color: #d9534f;
+  margin-left: 4px;
+  font-size: 14px;
+}
+
+/* Input Container */
+.text-input-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 35px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+
+/* Error Border */
+.input-error {
+  border-color: #d9534f !important;
+  background-color: #ffe5e5;
+}
+
+/* Prefix/Suffix Input */
+.text-input-prefix,
+.text-input-suffix {
+  width: 30px;
+  height: 100%;
+  border: none;
+  text-align: center;
+  background-color: #f9f9f9;
+  color: #555;
+  font-size: 14px;
+
+  &:disabled {
+    background-color: #e9ecef;
+    color: #888;
+  }
+}
+
+/* Divider */
+.text-input-divider {
+  width: 2px;
+  height: 80%;
+  background-color: #ccc;
+}
+
+/* Main Input */
+.text-input-main {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+
+  &:focus {
+    border-color: #007bff;
+    background-color: #fff;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+  }
+}
+
+/* Error Message */
+.text-input-error {
+  color: #d9534f;
+  font-size: 12px;
+  margin-top: 5px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Smooth Error Appearance */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,71 @@
+
+#deductionTable {
+    border: 1px solid lightgray;
+  
+    thead {
+      position: sticky;
+      top: 0;
+      background-color: lightseagreen;
+      color: white;
+      font-size: 18px;
+    }
+  
+    thead, tbody {
+      text-align: center;
+    }
+  
+    tbody input {
+      text-align: center;
+    }
+  
+    th {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    tr {
+      height: 30px !important;
+    }
+    td{
+      height: 30px;
+    }
+    .action-button {
+      padding: 0px;
+    }
+  }
+
+  
+
+.tbl {
+    height: 30px;
+    border: none;
+  }
+  
+  .tbl:focus, 
+  .tbl:active {
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  /** ASYNC SELECT STYLE OVERRIDE **/
+  .css-1wy0on6 {
+    display: none !important;
+  }
+  
+  .css-hlgwow {
+    border: none !important;
+    height: 30px !important;
+  }
+  
+  .css-13cymwt-control {
+    bottom: 3px !important;
+    top: -3px !important;
+    height: 29px !important;
+    border: none !important;
+  }
+  
+  .css-t3ipsp-control {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  

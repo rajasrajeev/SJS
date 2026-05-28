@@ -1,0 +1,174 @@
+@import '../../style_variables.scss';
+
+$label-color: #3F4254;
+$login-ip-bg: #F3F6F9;
+
+.ip-label {
+    font-family: 'SemiBold';
+    font-size: 14px;
+    color: $label-color;
+}
+
+.login-input-wrapper {
+    input {
+        border: none;
+        outline: none;
+        background-color: $login-ip-bg;
+        border-radius: 9px;
+        height: 54px;
+        width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    input:focus {
+        border: 2px solid rgba($primary-color, 0.5);
+    }
+}
+
+.form-btn {
+    border-radius: 6px;
+    border: none;
+    height: 42px;
+    width: 128px;
+    // padding-left: 20px;
+    padding-right: 10px;
+    color: #FFF;
+    font-family: 'SemiBold';
+    font-size: 14px;
+}
+
+.strength-wrapper {
+    display: inline-flex;
+    width: 100%;
+    height: 10px;
+}
+
+.strength-bar {
+    width: 100%;
+    max-width: 116px;
+    height: 5px;
+    border-radius: 8px;
+    margin-right: 7px;
+}
+
+.strength-bar-normal {
+    background-color: #E4E6EF;
+}
+
+.strength-bar-active {
+    background-color: #50CD89;
+}
+
+.input-wrapper {
+    input {
+        border: none;
+        outline: none;
+        background-color: #FFF;
+        border-radius: 9px;
+        height: 54px;
+        width: 100%;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    input::placeholder {
+        font-family: 'Medium';
+        font-size: 14px;
+        color: "#999AAD";
+    }
+
+    input:focus {
+        border: 2px solid rgba($primary-color, 0.5);
+    }
+}
+
+
+.custom-select {
+    outline: 0;
+    width: 100%;
+    background-color: #fff;
+    padding-left: 10px;
+    border: none;
+    border-radius: 9px;
+    height: 54px;
+
+}
+
+.custom-select::after {
+    content: url("../../assets/icons/Angle-down.png");
+}
+
+.custom-select:focus {
+    border: 2px solid rgba($primary-color, 0.5);
+}
+
+.reg-filepicker {
+    margin-top: 38px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 15px;
+    display: inline-flex;
+    height: 54px;
+    border-radius: 9px;
+    width: 100%;
+    cursor: pointer;
+
+    p {
+        margin-left: 25%;
+    }
+}
+
+//Searchbox dropdown
+.custom-input-search-group {
+    position: relative;
+    width: 100%;
+    border-radius: 6px;
+height: 42px;
+    .custom-input-group-text {
+        background-color: white;
+        /* Customize background color */
+        border: none;
+    }
+
+    .custom-form-control {
+        background-color: white;
+        border: none !important;
+
+        &::placeholder {
+            font-family: "Bold";
+            color: #A1A5B7;
+            font-size: 14px;
+        }
+    }
+
+}
+
+
+
+
+.custom-form-control {
+    border: none;
+    box-shadow: none;
+}
+
+.custom-dropdown-menu {
+    position: relative;
+    width: 100%;
+    left: 0;
+    z-index: 1000;
+    border: 1px solid #ccc;
+    background-color: white;
+    max-height: 200px;
+    /* Adjust as needed */
+    overflow-y: auto;
+}
+
+.custom-dropdown-item {
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.custom-dropdown-item:hover {
+    background-color: #f1f1f1;
+}

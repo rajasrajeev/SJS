@@ -1,0 +1,79 @@
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+
+  &-label {
+    font-size: 14px;
+    // font-weight: 600;
+    color: #555;
+    margin-bottom: 7px;
+  }
+
+  &-options {
+    display: flex;
+    flex-flow: wrap;
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  &-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #007bff;
+      background-color: #f1f8ff;
+    }
+
+    .checkbox-group-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .checkbox-group-input {
+        margin: 0;
+      }
+
+      .checkbox-group-text {
+        font-size: 14px;
+        font-weight: bold;
+        color: #333;
+      }
+    }
+
+    .checkbox-group-sub-options {
+      display: flex;
+      flex-direction: row; /* Display sub-options inline */
+      flex-wrap: wrap; /* Allow sub-options to wrap to the next line */
+      gap: 10px;
+      align-items: left; /* Align items vertically in the center */
+
+      .checkbox-group-sub-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        &:hover {
+          background-color: #e9f5ff;
+          border-radius: 4px;
+        }
+
+        .checkbox-group-input {
+          margin: 0;
+        }
+
+        .checkbox-group-text {
+          font-size: 14px;
+          font-weight: normal;
+          color: #555;
+        }
+      }
+    }
+  }
+}

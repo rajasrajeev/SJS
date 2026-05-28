@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "EmployeeStatutory" ALTER COLUMN "pf_no" SET DATA TYPE TEXT,
+ALTER COLUMN "uan_no" SET DATA TYPE TEXT,
+ALTER COLUMN "esic_no" SET DATA TYPE TEXT;

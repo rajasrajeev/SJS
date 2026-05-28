@@ -1,0 +1,88 @@
+
+
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    border: 1px solid rgba(0, 0, 0, .05);
+    border-radius: .375rem;
+    background-color: #fff;
+    background-clip: border-box;
+
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.card-body {
+    padding: 1.5rem;
+    flex: 1 1 auto;
+}
+
+.card-title {
+    margin-bottom: 1.25rem; 
+}
+
+.card-stats .card-body {
+    padding: 1rem 1.5rem;
+}
+  
+.text-uppercase {
+    text-transform: uppercase !important;
+}
+  
+
+
+  .font-weight-bold {
+    font-weight: 600 !important;
+  }
+
+  .icon {
+    width: 3rem;
+    height: 3rem;
+  }
+  
+  .icon i {
+    font-size: 2.25rem;
+  }
+  
+  .icon-shape {
+    display: inline-flex;
+    padding: 12px;
+    text-align: center;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .icon-shape i {
+    font-size: 1.25rem;
+  }
+
+  .bg-danger {
+    background-color: #f5365c !important;
+  }
+
+  .text-white {
+    color: #fff !important;
+  }
+
+  .shadow {
+    box-shadow: 0 0 2rem 0 rgba(136, 152, 170, .15) !important;
+  }
+
+  [class*='shadow'] {
+    transition: all .15s ease;
+  }
+
+  .text-muted {
+    color: #8898aa !important;
+  }
+
+  .text-success {
+    color: #2dce89 !important;
+  }
+
+  .text-nowrap {
+    white-space: nowrap !important;
+  }

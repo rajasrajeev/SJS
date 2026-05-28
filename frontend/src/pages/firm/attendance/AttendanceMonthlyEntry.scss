@@ -1,0 +1,33 @@
+.attendance-dropdown {
+    // width: 50px;
+    // height: 45px;
+    // padding: 5px;
+    // text-align: center;
+    // font-size: 14px;
+    // font-weight: bold;
+    // cursor: pointer;
+    // border: none;
+    // border-radius: 8px;
+    // background-color: var(--bg-color, darkgreen);
+    // color: white;
+    // transition: all 0.3s ease-in-out;
+    // box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    // outline: none;
+    .dropdown-select {
+        // height: 32px;
+        // width: 50px;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        padding: 5px;
+    }
+  }
+  
+//   .attendance-dropdown:hover {
+//     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+//   }
+  
+//   .attendance-dropdown:focus {
+//     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+//   }
+  

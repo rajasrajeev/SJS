@@ -1,0 +1,65 @@
+button{
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    padding-top: 10px;
+    padding-right: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    white-space: nowrap;
+
+}
+.sticky-buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: fixed;
+    bottom: 0px;
+    gap: 1rem;
+    padding: 10px;
+    text-align: right;
+    z-index: 1000;
+    left: 225px;
+  }
+.address-tab-container{
+  display: flex;
+  justify-content: center;
+  height: 180px;
+  .image-preview {
+    margin-top: 0px;
+}
+      .image-preview-img {
+          width: 200px;
+          height: 150px !important;
+      }
+      .icon-container {
+        margin-left: -25px;
+      }
+
+}
+.wages-tab{
+  .text-input-label {
+    white-space: nowrap;
+  }
+}
+
+
+.statutory-tab{
+  .checkbox-group-item {
+    gap: 0px; 
+    padding: 0px; 
+    border:none; 
+  }
+}

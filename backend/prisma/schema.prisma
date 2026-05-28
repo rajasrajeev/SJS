@@ -1,0 +1,879 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // "sqlite" "postgresql" ==> NEED TO CHANGE MANUALLY HERE, CANNOT ACCESS FROM env
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  password       String
+  last_logged_in DateTime?
+  created_at     DateTime? @default(now())
+  updated_at     DateTime? @updatedAt
+
+  passwordResetToken String?
+  passwordResetAt    DateTime?
+
+  is_super_admin Boolean @default(false)
+  is_admin       Boolean @default(false)
+  is_staff       Boolean @default(false)
+  is_firm        Boolean @default(false)
+  is_firm_staff  Boolean @default(false)
+
+  userPermissions UserPermission[]
+
+  // Opposite relations
+  firm  Firm?
+  color UserColor?
+  staff Staff?
+}
+
+enum FirmStatus {
+  PROPRIETOR
+  PARTNERSHIP
+  COMPANY
+  OTHER
+}
+
+enum FirmType {
+  SHOP
+  FAB
+  OTHER
+}
+
+model Firm {
+  id               Int           @id @default(autoincrement())
+  user             User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id          Int           @unique
+   
+  name             String   
+  address          String   
+  contact_no       String   
+  email_id         String   
+  web              String?   
+  fdb_no           String?   
+  incorporation_no String?   
+  gst_no           String   
+  other_license    String?   
+  firm_status      FirmStatus   
+  country          Country?      @relation(fields: [country_id], references: [id], onDelete: SetNull)
+  country_id       Int?   
+  state            State?        @relation(fields: [state_id], references: [id], onDelete: SetNull)
+  state_id         Int?   
+  district         District?     @relation(fields: [district_id], references: [id], onDelete: SetNull)
+  district_id      Int?
+
+  start_date       DateTime
+  business_type    String
+  trade_lic_no     String
+  logo             String?
+  reg_no           String?
+  contact_no_2     String?
+  land_phone       String?
+  pin              String?
+  firm_type        FirmType?
+   
+  staffs           Staff[]
+  branches         Branch[]
+}
+
+model Branch {
+  id               Int        @id @default(autoincrement())
+  name             String
+  firm             Firm?      @relation(fields: [firm_id], references: [id], onDelete: Cascade)
+  firm_id          Int?
+  address          String
+  country          Country?   @relation(fields: [country_id], references: [id], onDelete: SetNull)
+  country_id       Int? 
+  state            State?     @relation(fields: [state_id], references: [id], onDelete: SetNull)
+  state_id         Int?
+  district         District?  @relation(fields: [district_id], references: [id], onDelete: SetNull)
+  district_id      Int?
+  contact_no       String
+  email_id         String
+
+  reg_no           String?
+  web              String?
+  fdb_no           String?
+  incorporation_no String?
+  gst_no           String?
+  other_license    String?
+  trade_lic_no     String?
+  branch_status    FirmStatus?
+  start_date       DateTime?
+  contact_no_2     String?
+  land_phone       String?
+  pin              String? 
+
+  created_at       DateTime?  @default(now())
+  updated_at       DateTime?  @updatedAt
+
+  staffs           Staff[]    @relation("StaffBranches")
+  employee         Employee[]
+  deductionMonthlyMaster  DeductionMonthlyMaster[]
+  deductionMonthlyMonthly  DeductionMonthlyMonthly[]
+  deductionMonthlyAdvance  DeductionMonthlyAdvance[]
+  daMonthlyShop            DaMonthlyShop[]
+  daMonthlyFab             DaMonthlyFab[]
+  daMonthlyIda             DaMonthlyIda[]
+}
+
+// Can used for both admin staff and firm CA staffs
+model Staff {
+  id     Int    @id @default(autoincrement())
+  name   String
+  mobile String
+
+  user    User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id Int  @unique
+
+  // For Firm staff . for admin's staff these fields are optionals
+  firm     Firm?    @relation(fields: [firm_id], references: [id], onDelete: Cascade)
+  firm_id  Int?
+  branches Branch[] @relation("StaffBranches")
+
+  created_at                     DateTime?                 @default(now())
+  updated_at                     DateTime?                 @updatedAt
+}
+
+model DaMonthlyShop {
+  id                              Int                     @id @default(autoincrement())
+  shop_da_id                      Int
+  shopDa                          ShopDaMaster            @relation(fields: [shop_da_id], references: [id], onDelete: Cascade)
+  da_point                        Float
+  amount                          Float
+  month                           DateTime
+  branch_id                       Int?
+  branch                          Branch?                  @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model DaMonthlyFab {
+  id                              Int                     @id @default(autoincrement())
+  fab_da_id                       Int
+  fabDa                           FabDaMaster             @relation(fields: [fab_da_id], references: [id], onDelete: Cascade)
+  da_point                        Float
+  amount                          Float
+  month                           DateTime
+  branch_id                       Int?
+  branch                          Branch?                  @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model DaMonthlyIda {
+  id                              Int                     @id @default(autoincrement())
+  amount                          Float
+  month                           DateTime
+  branch_id                       Int?
+  branch                          Branch?                  @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model Country {
+  id                              Int                 @id @default(autoincrement())
+  name                            String              @unique
+  code                            String?
+  created_at                      DateTime?           @default(now())
+                
+  states                          State[]
+  firms                           Firm[]
+  brances                         Branch[]
+  employeeAddress                 EmployeeAddress[]
+}
+
+model State {
+  id                              Int                 @id @default(autoincrement())
+  name                            String              @unique
+  country                         Country             @relation(fields: [country_id], references: [id], onDelete: Cascade)
+  country_id                      Int         
+  created_at                      DateTime?           @default(now())
+
+  districts                       District[]
+  firms                           Firm[]
+  brances                         Branch[]
+  employeeAddress                 EmployeeAddress[]
+}
+
+model District {
+  id                              Int                 @id @default(autoincrement())
+  name                            String              @unique
+  state                           State               @relation(fields: [state_id], references: [id], onDelete: Cascade)
+  state_id                        Int         
+  created_at                      DateTime?           @default(now())
+  firms                           Firm[]
+  brances                         Branch[]
+  da_constant                     DaConstant[]
+  employeeAddress                 EmployeeAddress[]
+}
+
+model UserColor {
+  id                              Int                 @id @default(autoincrement())
+  hexcode                         String              
+  user                            User                @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id                         Int                 @unique
+}
+
+model Menu {
+  id                              Int                 @id @default(autoincrement())
+  name                            String          
+  icon                            String          
+  url                             String          
+  created_at                      DateTime?           @default(now())
+  updated_at                      DateTime?           @updatedAt
+
+  subMenu                         SubMenu[]
+  permissions                     Permission[]
+}
+
+model SubMenu {
+  id                              Int                 @id @default(autoincrement())
+  menu                            Menu                @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+  menu_id                         Int         
+  name                            String          
+  icon                            String          
+  url                             String          
+
+  created_at                      DateTime?           @default(now())
+  updated_at                      DateTime?           @updatedAt
+
+  permissions                     Permission[]
+}
+
+model Permission {
+  id                              Int                 @id @default(autoincrement())
+  menu                            Menu?               @relation(fields: [menu_id], references: [id], onDelete: Cascade)
+  menu_id                         Int?    
+  subMenu                         SubMenu?            @relation(fields: [sub_menu_id], references: [id], onDelete: Cascade)
+  sub_menu_id                     Int?
+  function_name                   String?
+  name                            String?
+  userPermissions                 UserPermission[]
+}
+
+model UserPermission {
+  id                              Int                  @id @default(autoincrement())
+  user                            User                 @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id                         Int          
+  permission                      Permission           @relation(fields: [permission_id], references: [id], onDelete: Cascade)
+  permission_id                   Int          
+                            
+  created_at                      DateTime?            @default(now())
+  updated_at                      DateTime?            @updatedAt
+}
+
+model Department {
+  id                              Int                  @id @default(autoincrement())
+  code                            String           
+  name                            String           
+           
+  created_at                      DateTime?            @default(now())
+  updated_at                      DateTime?            @updatedAt
+
+  designation                     Designation[]
+  employee                        Employee[]
+  deductionMonthlyMaster          DeductionMonthlyMaster[]
+  deductionMonthlyMonthly         DeductionMonthlyMonthly[]
+  deductionMonthlyAdvance         DeductionMonthlyAdvance[]
+}
+
+model Designation {
+  id                              Int                  @id @default(autoincrement())
+  department_id                   Int
+  department                      Department           @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  code                            String
+  name                            String
+  effective_date                  DateTime
+  basic                           String?
+
+  employee                        Employee[]
+  currentDesignations             PromotionWages[]          @relation("CurrentDesignation")
+  workedDesignations              PromotionWages[]          @relation("WorkedDesignation")
+  nightAllowanceMonthly           NightAllowanceMonthly[]
+  overtimeWagesMonthly            OvertimeWagesMonthly[]
+
+
+  created_at                      DateTime?            @default(now())
+  updated_at                      DateTime?            @updatedAt
+}
+
+model Deduction {
+  id                              Int                  @id @default(autoincrement())
+  code                            String           
+  acc_code                        String           
+  name                            String
+  type                            DeductionType
+  amount                          Float
+  installment_amt                 Float?
+  interest                        Float?
+  category                        DeductionCategory?
+  month                           DeductionMonth[]
+  deductionMonthlyMaster          DeductionMonthlyMaster[]
+  deductionMonthlyMonthly         DeductionMonthlyMonthly[]
+  deductionMonthlyAdvance         DeductionMonthlyAdvance[]
+
+  created_at                      DateTime?            @default(now())
+  updated_at                      DateTime?            @updatedAt
+}
+
+enum DeductionType {
+  Master
+  Monthly
+  Advance
+}
+
+enum DeductionCategory {
+  FULLWITHOUTUNRECOVER
+  FULLWITHUNRECOVER
+  POSSIBLEWITHOUTUNRECOVER
+  POSSIBLEWITHUNRECOVER
+  MONTHLYSETTINGWITHOUTUNRECOVER
+  CHARTWITHOUTINTEREST
+  CHARTWITHINTEREST
+}
+
+model DeductionMonth {
+  id                              Int                  @id @default(autoincrement())
+  deduction_id                    Int        
+  deduction                       Deduction?           @relation(fields: [deduction_id], references: [id], onDelete: Cascade)
+  month                           DateTime              // Changed from String to DateTime for better handling.
+                          
+  created_at                      DateTime?            @default(now())
+  updated_at                      DateTime?            @updatedAt
+}
+
+enum LeaveStatus {
+  PAID
+  UNPAID
+}
+
+model Leave {
+  id                              Int                  @id @default(autoincrement())
+  code                            String
+  name                            String
+  status                          LeaveStatus?
+
+  created_at                      DateTime?            @default(now())
+  updated_at                      DateTime?            @updatedAt
+}
+
+model Shift {
+  id                              Int                  @id @default(autoincrement())
+  name                            String
+  code                            String?
+  start                           String // Store time as HH:mm
+  end                             String // Store time as HH:mm
+  start_day                       DaysOfWeek?
+
+  employeeShift                   EmployeeShift[]
+
+  created_at                      DateTime?             @default(now())
+  updated_at                      DateTime?             @updatedAt
+}
+
+model DaConstant {
+  id                              Int                    @id @default(autoincrement())
+  district_id                     Int
+  district                        District               @relation(fields: [district_id], references: [id], onDelete: Cascade)
+  year                            String
+  month                           String
+  value                           Float
+
+  created_at                      DateTime?              @default(now())
+  updated_at                      DateTime?              @updatedAt
+}
+
+model ShopDaMaster {
+  id                             Int                     @id @default(autoincrement())
+  category                       String?
+  code                           String
+  name                           String
+  fixed                          String
+  rate                           String
+
+  daMonthlyShop                  DaMonthlyShop[]
+
+  created_at                     DateTime?                @default(now())
+  updated_at                     DateTime?                @updatedAt
+}
+
+model FabDaMaster {
+  id                             Int                      @id @default(autoincrement())
+  category                       String?
+  code                           String
+  name                           String
+  deduction                      String
+  rate_per_da                    String
+  rate_of_point String
+
+  daMonthlyFab                   DaMonthlyFab[]
+
+  created_at                     DateTime?                @default(now())
+  updated_at                     DateTime?                @updatedAt
+}
+
+enum DaysOfWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+model Earnings {
+  id                              Int                     @id @default(autoincrement())
+  code                            String            
+  acc_code                        String            
+  name                            String            
+  type                            EarningsType            
+  effect_pf                       Boolean                 @default(false)
+  effect_csi                      Boolean                 @default(false)
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+enum EarningsType {
+  Master
+  Monthly
+}
+
+model NightAllowance {
+  id                              Int                           @id @default(autoincrement())
+  name                            String
+  amount                          Float    
+  code                            String?  
+  nightAllowanceMonthly           NightAllowanceMonthly[]
+
+  created_at                      DateTime?                    @default(now())
+  updated_at                      DateTime?                    @updatedAt
+}
+
+model Overtime {
+  id                             Int                           @id @default(autoincrement())
+  name                           String
+  amount                         Float    
+  base_amount                    Float
+  code                           String?  
+  overtime_type                  OvertimeType
+  overtimeWagesMonthly           OvertimeWagesMonthly[]
+
+  created_at                     DateTime?                     @default(now())
+  updated_at                     DateTime?                     @updatedAt
+}
+
+enum OvertimeType {
+  Single
+  Double
+  Triple
+}
+
+enum SalaryType {
+  MONTHLY
+  CONSOLIDATED
+  LABOUR
+  ADJUSTEDSALARY
+  MINIMUMTWENTYFIVEPERCENTSALARY
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum BloodGroup {
+  APOSITIVE
+  ANEGATIVE
+  BPOSITIVE
+  BNEGATIVE
+  OPOSITIVE
+  ONEGATIVE
+  ABPOSITIVE
+  ABNEGATIVE
+}
+
+model MasterPf {
+  id                              Int                     @id @default(autoincrement())
+  pf_total_percentage             Float
+  employee_percentage             Float
+  pension_percentage              Float
+  diff_percentage                 Float
+  pf_celling_amt                  Float
+  edli_wages                      Float
+  establishment_pf_code           String
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model MasterEsic {
+  id                              Int                     @id @default(autoincrement())
+  esic_total_percentage           Float
+  employee_percentage             Float
+  employer_percentage             Float
+  establishment_code              String
+  esic_celling_amt                Float
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model Employee {
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int?                    @unique
+  branch_id                       Int?            
+  branch                          Branch?                 @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  pno                             String            
+  tno                             String?           
+  name                            String            
+  gender                          Gender            
+  dob                             DateTime            
+  blood_group                     BloodGroup            
+  religion                        String?           
+  age                             Int           
+  father_name                     String            
+  spouse_name                     String            
+  nominee                         String            
+  join_trainee                    DateTime            
+  join_staff                      DateTime            
+  department_id                   Int           
+  department                      Department              @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  designation_id                  Int           
+  designation                     Designation             @relation(fields: [designation_id], references: [id], onDelete: Cascade)
+  retire_date                     DateTime            
+  active                          Boolean                 @default(true)
+  retired                         Boolean                 @default(false)
+  mobile_no                       String              
+  alt_mobile_no                   String?             
+  email                           String?   
+  photo                           String?
+
+  employeeShift                   EmployeeShift[]
+  employeeAddress                 EmployeeAddress[]
+  employeeWage                    EmployeeWage[]
+  employeeCategory                EmployeeCategory[]
+  employeeBank                    EmployeeBank[]
+  employeeStatutory               EmployeeStatutory[]
+  employeeLic                     EmployeeLic[]
+  employeeQualification           EmployeeQualification[]
+  employeeExperience              EmployeeExperience[]
+
+  deductionEmployeeMonthlyMaster  DeductionEmployeeMonthlyMaster[]
+  deductionEmployeeMonthlyMonthly DeductionEmployeeMonthlyMonthly[]
+  deductionEmployeeMonthlyAdvance DeductionEmployeeMonthlyAdvance[]
+  promotionWages                  PromotionWages[]
+  nightAllowanceMonthly           NightAllowanceMonthly[]
+  overtimeWagesMonthly            OvertimeWagesMonthly[]
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model EmployeeAddress {
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int             
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  house_name                      String              
+  house_no                        String              
+  street_name                     String              
+  place                           String              
+  pincode                         Int                       
+  country                         Country?                @relation(fields: [country_id], references: [id], onDelete: SetNull)
+  country_id                      Int?              
+  state                           State?                  @relation(fields: [state_id], references: [id], onDelete: SetNull)
+  state_id                        Int?              
+  district                        District?               @relation(fields: [district_id], references: [id], onDelete: SetNull)
+  district_id                     Int?              
+  is_permanent                    Boolean                 @default(false)
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+
+}             
+
+model EmployeeShift {             
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int               
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  shift_id                        Int               
+  shift                           Shift                   @relation(fields: [shift_id], references: [id], onDelete: Cascade)
+  week_off                        String?
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}             
+
+model EmployeeWage {              
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int             
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  basic1                          Float             
+  basic2                          Float?              
+  basic3                          Float?              
+  basic4                          Float?              
+  basic5                          Float?                  @default(0.0)
+  basic6                          Float?                  @default(0.0)
+  increment_percentage            Float?                  @default(0.0)
+  increment_percentage_value      Float?                  @default(0.0)
+  service_weightage               Float?                  @default(0.0)
+  service_weightage_value         Float?                  @default(0.0)
+  hra                             Float?                  @default(0.0)
+  hra_value                       Float?                  @default(0.0)
+  ltc                             Float?                  @default(0.0)
+  ltc_value                       Float?                  @default(0.0)
+  travel_allowance_percentage     Float                   @default(0.0)
+  travel_allowance_value          Float?                  @default(0.0)
+  attendance_incentive            Float                   @default(0.0)
+  attendance_incentive_value      Float?                  @default(0.0)
+  production_incentive            Float                   @default(0.0)
+  production_incentive_value      Float?                  @default(0.0)
+  medical_allowance               Float                   @default(0.0)
+  washing_allowance               Float                   @default(0.0)
+  medical_allowance_value         Float                   @default(0.0)
+  washing_allowance_value         Float                   @default(0.0)
+  other_allowance                 Float                   @default(0.0)
+  other_allowance_value           Float                   @default(0.0)
+  da_type                         DaTypes?             
+  da                              Float?             
+  fda                             Float?             
+  vda                             Float?             
+  salary                          Float?              
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+enum DaTypes {
+  Master
+  Monthly
+  Advance
+}
+
+model EmployeeCategory {
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int             
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  salary_type                     SalaryType              
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}                                 
+
+model EmployeeBank {              
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int             
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  bank_name                       String              
+  branch_name                     String              
+  ifsc                            String              
+  account_no                      String              
+  is_primary                      Boolean                 @default(false)
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model EmployeeStatutory {
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int             
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  is_pf                           Boolean                 @default(false)
+  is_esic                         Boolean                 @default(false)
+  uan_no                          String?
+  pf_no                           String?
+  pf_amount                       Float?
+  vpf_percentage                  Float?
+  esic_no                         String?
+  lwf                             String?
+  other                           String?
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model EmployeeLic {
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int             
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  lic_no                          String              
+  lic_amount                      Float             
+  is_primary                      Boolean                 @default(false)
+
+  created_at                      DateTime?               @default(now() )
+  updated_at                      DateTime?               @updatedAt
+}
+
+model EmployeeQualification {
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  qualification                   String
+  percentage                      Float
+  year                            Int
+  university                      String
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model EmployeeExperience {
+  id                              Int                     @id @default(autoincrement())
+  emp_id                          Int
+  employee                        Employee                @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  firm_name                       String
+  place                           String
+  joining_date                    DateTime
+  resigning_date                  DateTime?
+  designation                     String
+
+  created_at                      DateTime?               @default(now())
+  updated_at                      DateTime?               @updatedAt
+}
+
+model DeductionMonthlyMaster {
+  id                             Int                         @id @default(autoincrement())
+  deduction_id                   Int    
+  deduction                      Deduction?                  @relation(fields: [deduction_id], references: [id], onDelete: Cascade)
+  branch_id                      Int?    // Changed to nullable
+  branch                         Branch?                     @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  department_id                  Int?    
+  department                     Department?                 @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  month                          DateTime    
+  unwanted                       Boolean                     @default(false)
+  unrecover                      Boolean                     @default(false)
+  
+  deductionEmployeeMonthlyMaster               DeductionEmployeeMonthlyMaster[]
+  
+  created_at                     DateTime?                   @default(now())
+  updated_at                     DateTime?                   @updatedAt
+}
+
+model DeductionEmployeeMonthlyMaster {
+  id                             Int                       @id @default(autoincrement())
+  deduction_monthly_master_id    Int
+  deduction_monthly_master       DeductionMonthlyMaster?   @relation(fields: [deduction_monthly_master_id], references: [id], onDelete: Cascade)
+  emp_id                         Int
+  employee                       Employee                  @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  deduction_amt                  Float
+  installment_amt                Float?
+  interest_percentage            Float?
+
+  created_at                     DateTime?                 @default(now())
+  updated_at                     DateTime?                 @updatedAt
+}
+
+model DeductionMonthlyMonthly {
+  id                                Int                                @id @default(autoincrement())
+  deduction_id                      Int
+  deduction                         Deduction?                         @relation(fields: [deduction_id], references: [id], onDelete: Cascade)
+  branch_id                         Int?         
+  branch                            Branch?                            @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  department_id                     Int?           
+  department                        Department?                         @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  month                             DateTime    
+    
+  deductionEmployeeMonthlyMonthly   DeductionEmployeeMonthlyMonthly[]
+    
+  created_at                        DateTime?                          @default(now())
+  updated_at                        DateTime?                          @updatedAt
+}
+
+model DeductionEmployeeMonthlyMonthly {
+  id                             Int                       @id @default(autoincrement())
+  deduction_monthly_monthly_id   Int
+  deduction_monthly_monthly      DeductionMonthlyMonthly?   @relation(fields: [deduction_monthly_monthly_id], references: [id], onDelete: Cascade)
+  emp_id                         Int
+  employee                       Employee                  @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  deduction_amt                  Float
+  installment_amt                Float?
+  interest_percentage            Float?
+
+  created_at                     DateTime?                 @default(now())
+  updated_at                     DateTime?                 @updatedAt
+}
+model DeductionMonthlyAdvance {
+  id                                Int                                @id @default(autoincrement())
+  deduction_id                      Int
+  deduction                         Deduction?                         @relation(fields: [deduction_id], references: [id], onDelete: Cascade)
+  branch_id                         Int?         
+  branch                            Branch?                            @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  department_id                     Int?           
+  department                        Department?                         @relation(fields: [department_id], references: [id], onDelete: Cascade)
+  month                             DateTime    
+    
+  deductionEmployeeMonthlyAdvance   DeductionEmployeeMonthlyAdvance[]
+    
+  created_at                        DateTime?                          @default(now())
+  updated_at                        DateTime?                          @updatedAt
+}
+
+model DeductionEmployeeMonthlyAdvance {
+  id                             Int                        @id @default(autoincrement())
+  deduction_monthly_advance_id   Int
+  deduction_monthly_advance      DeductionMonthlyAdvance?   @relation(fields: [deduction_monthly_advance_id], references: [id], onDelete: Cascade)
+  emp_id                         Int
+  employee                       Employee                   @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  deduction_amt                  Float
+  installment_amt                Float?
+  interest_percentage            Float?
+
+  created_at                     DateTime?                 @default(now())
+  updated_at                     DateTime?                 @updatedAt
+}
+
+model PromotionWages {
+  id                             Int                       @id @default(autoincrement())
+  emp_id                         Int
+  employee                       Employee                  @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  designation_id                 Int
+  designation                    Designation               @relation("CurrentDesignation", fields: [designation_id], references: [id], onDelete: Cascade)
+  worked_designation_id          Int
+  worked_designation             Designation               @relation("WorkedDesignation", fields: [worked_designation_id], references: [id], onDelete: Cascade)
+  days_worked                    Int
+  amount                         Float
+
+  created_at                     DateTime?                 @default(now())
+  updated_at                     DateTime?                 @updatedAt
+}
+
+model NightAllowanceMonthly {
+  id                             Int                       @id @default(autoincrement())
+  emp_id                         Int
+  employee                       Employee                  @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  night_allowance_id             Int?
+  nightAllowance                 NightAllowance?           @relation(fields: [night_allowance_id], references: [id], onDelete: Cascade)
+  designation_id                 Int
+  designation                    Designation               @relation(fields: [designation_id], references: [id], onDelete: Cascade)
+  night_worked                   Int
+  amount                         Float
+
+  created_at                     DateTime?                 @default(now())
+  updated_at                     DateTime?                 @updatedAt
+}
+
+model OvertimeWagesMonthly {
+  id                             Int                       @id @default(autoincrement())
+  emp_id                         Int
+  employee                       Employee                  @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+  overtime_id                    Int?
+  overtime                       Overtime?           @relation(fields: [overtime_id], references: [id], onDelete: Cascade)
+  designation_id                 Int
+  designation                    Designation               @relation(fields: [designation_id], references: [id], onDelete: Cascade)
+  overtime_worked                Int
+  amount                         Float
+
+  created_at                     DateTime?                 @default(now())
+  updated_at                     DateTime?                 @updatedAt
+}

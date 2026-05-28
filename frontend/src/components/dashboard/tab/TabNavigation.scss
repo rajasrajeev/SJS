@@ -1,0 +1,29 @@
+@import '../../../style_variables.scss';
+
+.tab-navigation {
+    .nav-item {
+      .nav-link {
+        color:black !important;
+        &:hover {
+          background-color: #f8f9fa;
+        }
+      }
+      .nav-link.active {
+        color:$primary-color;
+        background-color: #f8f9fa;
+        border-bottom-color: rgb(88, 127, 255);
+        border-bottom-width: medium;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+      }
+    }
+  }
+  
+  .tab-content {
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  
