@@ -4,6 +4,7 @@ import PageTitle from '../../../components/dashboard/PageTitle';
 import MonthlyEarningsModal from './MonthlyEarningsModal';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMonthlyEarnings } from '../../../features/earningsMonthlySlice';
+import { fetchEarnings } from '../../../features/earningSlice';
 
 
 const MonthlyEarnings = () => {
@@ -31,8 +32,12 @@ const MonthlyEarnings = () => {
     ];
 
     const dispatch = useDispatch();
+    
     const { monthlyEarnings } = useSelector((store) => store.earningsMonthly || {});
-
+    
+    useEffect(() => {
+        dispatch(fetchEarnings());
+    }, [dispatch]);
 
     useEffect(() => {
         dispatch(
