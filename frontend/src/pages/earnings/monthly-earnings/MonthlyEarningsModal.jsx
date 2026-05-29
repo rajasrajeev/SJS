@@ -7,10 +7,20 @@ import TextInput from '../../../components/form/TextInput';
 import CustomDropdown from '../../../components/form/CustomDropdown ';
 
 import { createMonthlyEarning, updateMonthlyEarning } from '../../../features/earningsMonthlySlice';
-
-
-
+import { fetchEarnings } from '../../../features/earningSlice';
 import '../style.scss';
+
+const normalizeDropdownOptions = (list = []) => {
+  // expected: earning objects {id,name,code,...}
+  return (list || []).map((e) => ({
+    value: e.id,
+    label: e.name,
+  }));
+};
+
+
+
+
 
 const months = [
   { id: 'January', name: 'January' },
@@ -27,7 +37,7 @@ const months = [
   { id: 'December', name: 'December' },
 ];
 
-const MonthlyEarningsModal = ({ show, handleClose, data }) => {
+const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) => {
   const dispatch = useDispatch();
   const { loading, error, success } = useSelector((store) => store.earningsMonthly || {});
 
@@ -45,6 +55,9 @@ const MonthlyEarningsModal = ({ show, handleClose, data }) => {
 
   useEffect(() => {
     if (!show) return;
+
+    dispatch(fetchEarnings());
+
 
     if (data?.id) {
       const monthDate = data.month ? new Date(data.month) : null;
@@ -149,10 +162,10 @@ const MonthlyEarningsModal = ({ show, handleClose, data }) => {
         <form onSubmit={handleSubmit}>
           <div className="row border-box">
             <div className="col-md-4 col-lg-4">
-              <CustomDropdown
+<CustomDropdown
                 label="Earning Id"
                 name="earning_id"
-                options={[]}
+                options={earningOptions}
                 value={formData.earning_id}
                 onChange={(e) => setFormData((p) => ({ ...p, earning_id: e.target.value }))}
                 required

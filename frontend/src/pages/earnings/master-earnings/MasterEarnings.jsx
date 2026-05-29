@@ -129,6 +129,7 @@ const MasterEarnings = () => {
         handleClose={() => setIsModalOpen(false)}
         data={selectedItem}
         types={[]}
+        earningsOptions={(monthlyEarningMasters?.data || []).flatMap((m) => (m?.earning ? [m.earning] : []))}
       />
     </>
   );

@@ -25,7 +25,7 @@ const months = [
   { id: 'December', name: 'December' },
 ];
 
-const MasterEarningModal = ({ show, handleClose, data, earnings }) => {
+const MasterEarningModal = ({ show, handleClose, data, earningsOptions = [], earnings }) => {
   const dispatch = useDispatch();
   const { loading, error, success } = useSelector((store) => store.earningsMonthly || {});
 

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import BackendTable from '../../../components/table/BackendTable';
 import PageTitle from '../../../components/dashboard/PageTitle';
 import MonthlyEarningsModal from './MonthlyEarningsModal';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMonthlyEarningMasters, fetchMonthlyEarningMasterDetails } from '../../../features/earningsMonthlySlice';
 
 const MonthlyEarnings = () => {
     const [data, setData] = useState([]);
@@ -22,29 +24,33 @@ const MonthlyEarnings = () => {
         { name: 'Earning Amount', selector: row => row.earningAmount, sortable: true },
     ];
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    const dispatch = useDispatch();
+    const { monthlyEarningMasters } = useSelector((store) => store.earningsMonthly || {});
 
     useEffect(() => {
-        handleSearch();
-    }, [search, data]);
+        dispatch(
+            fetchMonthlyEarningMasters({
+                page,
+                perPage,
+                search,
+            })
+        );
+    }, [dispatch, page, perPage, search]);
 
-    const fetchData = async () => {
-        setLoading(true);
-        // Generate sample data
-        const sampleData = Array.from({ length: 50 }, (_, i) => ({
-            department: `Department ${Math.floor(i / 10) + 1}`,
-            employeeCode: `EMP${(i + 1).toString().padStart(3, '0')}`,
-            employeeName: `Employee ${i + 1}`,
-            earningName: `Earning ${Math.floor(Math.random() * 5) + 1}`,
-            earningAmount: (Math.random() * 1000).toFixed(2),
+    useEffect(() => {
+        // Build table rows from master data
+        const rows = (monthlyEarningMasters?.data || []).map((m) => ({
+            id: m.id,
+            department: m.department?.name,
+            employeeCode: m.employees?.[0]?.employee?.emp_id, // fallback for existing table shape
+            employeeName: m.employees?.[0]?.employee?.name,
+            earningName: m.earning?.name,
+            earningAmount: m.employees?.[0]?.earning_amt,
         }));
-        setData(sampleData);
-        setFilteredData(sampleData);
-        setTotal(sampleData.length);
-        setLoading(false);
-    };
+        setData(rows);
+        setFilteredData(rows);
+        setTotal(monthlyEarningMasters?.meta?.total || 0);
+    }, [monthlyEarningMasters]);
 
     const handleSearch = () => {
         if (search) {
@@ -114,6 +120,7 @@ const MonthlyEarnings = () => {
                 show={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
                 data={selectedItem}
+        earningOptions={[]}
             />
         </div>
     );
