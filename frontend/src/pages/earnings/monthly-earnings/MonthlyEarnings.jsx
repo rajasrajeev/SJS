@@ -15,6 +15,11 @@ const MonthlyEarnings = () => {
     const [perPage, setPerPage] = useState(10);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const { earnings } = useSelector((store) => store.earning || {});
+    const earningOptions = (earnings || []).map((e) => ({
+                                id: e.id,
+                                name: e.name
+                            }));
 
     const columns = [
         { name: 'Department', selector: row => row.department, sortable: true },
@@ -120,7 +125,7 @@ const MonthlyEarnings = () => {
                 show={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
                 data={selectedItem}
-        earningOptions={[]}
+        earningOptions={earningOptions}
             />
         </div>
     );
