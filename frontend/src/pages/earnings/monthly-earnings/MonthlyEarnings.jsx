@@ -34,7 +34,7 @@ const MonthlyEarnings = () => {
     const dispatch = useDispatch();
     
     const { monthlyEarnings } = useSelector((store) => store.earningsMonthly || {});
-    
+
     useEffect(() => {
         dispatch(fetchEarnings());
     }, [dispatch]);
@@ -53,11 +53,11 @@ const MonthlyEarnings = () => {
         // Build table rows from monthly processed data
         const rows = (monthlyEarnings?.data || []).map((m) => ({
             id: m.id,
-            department: m.department?.name,
-            employeeCode: m.employees?.[0]?.employee?.emp_id,
-            employeeName: m.employees?.[0]?.employee?.name,
-            earningName: m.earning?.name,
-            earningAmount: m.employees?.[0]?.earning_amt,
+            department: m.department?.name || 'N/A',
+            employeeCode: m.employees?.[0]?.employee?.emp_id || 'N/A',
+            employeeName: m.employees?.[0]?.employee?.name || 'N/A',
+            earningName: m.earning?.name || 'N/A',
+            earningAmount: m.employees?.[0]?.earning_amt || 0,
         }));
         setData(rows);
         setFilteredData(rows);
@@ -68,12 +68,13 @@ const MonthlyEarnings = () => {
     const handleSearch = () => {
         if (search) {
             const filtered = data.filter(item =>
-                item.department.toLowerCase().includes(search.toLowerCase()) ||
-                item.employeeCode.toLowerCase().includes(search.toLowerCase()) ||
-                item.employeeName.toLowerCase().includes(search.toLowerCase()) ||
-                item.earningName.toLowerCase().includes(search.toLowerCase()) ||
-                item.earningAmount.toLowerCase().includes(search.toLowerCase())
+                String(item.department || '').toLowerCase().includes(search.toLowerCase()) ||
+                String(item.employeeCode || '').toLowerCase().includes(search.toLowerCase()) ||
+                String(item.employeeName || '').toLowerCase().includes(search.toLowerCase()) ||
+                String(item.earningName || '').toLowerCase().includes(search.toLowerCase()) ||
+                String(item.earningAmount || '').toLowerCase().includes(search.toLowerCase())
             );
+
             setFilteredData(filtered);
             setTotal(filtered.length);
         } else {
