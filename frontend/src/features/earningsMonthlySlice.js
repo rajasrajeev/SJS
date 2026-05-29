@@ -91,6 +91,7 @@ export const fetchMonthlyEarnings = createAsyncThunk(
   async (query, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get('/earnings/monthly', { params: query });
+      console.log("response->monthly-earning", response.data);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || error.message);

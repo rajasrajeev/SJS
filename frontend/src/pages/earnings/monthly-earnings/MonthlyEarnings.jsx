@@ -51,7 +51,7 @@ const MonthlyEarnings = () => {
 
     useEffect(() => {
         // Build table rows from monthly processed data
-        const rows = (monthlyEarnings?.data || []).map((m) => ({
+        const rows = (monthlyEarnings || []).map((m) => ({
             id: m.id,
             department: m.department?.name || 'N/A',
             employeeCode: m.employees?.[0]?.employee?.emp_id || 'N/A',
