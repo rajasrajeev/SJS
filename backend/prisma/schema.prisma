@@ -577,6 +577,8 @@ model Employee {
   nightAllowanceMonthly           NightAllowanceMonthly[]
   overtimeWagesMonthly            OvertimeWagesMonthly[]
 
+  monthlyManualAttendanceDay            MonthlyManualAttendanceDay[]
+
   created_at                      DateTime?               @default(now())
   updated_at                      DateTime?               @updatedAt
 }
@@ -877,3 +879,119 @@ model OvertimeWagesMonthly {
   created_at                     DateTime?                 @default(now())
   updated_at                     DateTime?                 @updatedAt
 }
+
+// -----------------------------
+// Earnings (Firm Master -> Monthly)
+// -----------------------------
+model EarningMonthlyMaster {
+  id           Int @id @default(autoincrement())
+  earning_id   Int
+  earning      Earnings @relation(fields: [earning_id], references: [id], onDelete: Cascade)
+  branch_id    Int?
+  branch       Branch? @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  department_id Int?
+  department   Department? @relation(fields: [department_id], references: [id], onDelete: Cascade)
+
+  month        DateTime
+
+  // Optional: if you want future flags (keeping similar to deduction master style)
+  unwanted     Boolean @default(false)
+
+  employees    EarningEmployeeMonthlyMaster[]
+
+  created_at   DateTime? @default(now())
+  updated_at   DateTime? @updatedAt
+}
+
+model EarningEmployeeMonthlyMaster {
+  id                       Int @id @default(autoincrement())
+  earning_monthly_master_id Int
+  earning_monthly_master EarningMonthlyMaster @relation(fields: [earning_monthly_master_id], references: [id], onDelete: Cascade)
+
+  emp_id                   Int
+  employee                 Employee @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+
+  earning_amt              Float
+
+  created_at               DateTime? @default(now())
+  updated_at               DateTime? @updatedAt
+
+  @@unique([earning_monthly_master_id, emp_id])
+}
+
+model EarningMonthlyMonthly {
+  id            Int @id @default(autoincrement())
+  earning_id    Int
+  earning       Earnings @relation(fields: [earning_id], references: [id], onDelete: Cascade)
+  branch_id     Int?
+  branch        Branch? @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  department_id Int?
+  department    Department? @relation(fields: [department_id], references: [id], onDelete: Cascade)
+
+  month         DateTime
+
+  employees     EarningEmployeeMonthlyMonthly[]
+
+  created_at    DateTime? @default(now())
+  updated_at    DateTime? @updatedAt
+}
+
+model EarningEmployeeMonthlyMonthly {
+  id                     Int @id @default(autoincrement())
+  earning_monthly_monthly_id Int
+  earning_monthly_monthly EarningMonthlyMonthly @relation(fields: [earning_monthly_monthly_id], references: [id], onDelete: Cascade)
+
+  emp_id                 Int
+  employee               Employee @relation(fields: [emp_id], references: [id], onDelete: Cascade)
+
+  earning_amt            Float
+
+  created_at             DateTime? @default(now())
+  updated_at             DateTime? @updatedAt
+
+  @@unique([earning_monthly_monthly_id, emp_id])
+}
+
+// -----------------------------
+// Manual Attendance (Monthly)
+// -----------------------------
+model MonthlyManualAttendanceHeader {
+  id          Int     @id @default(autoincrement())
+  month       DateTime
+  year        Int
+
+  days        MonthlyManualAttendanceDay[]
+
+  created_at  DateTime? @default(now())
+  updated_at  DateTime? @updatedAt
+
+  @@unique([month, year])
+}
+
+enum MonthlyAttendanceStatusCode {
+  P
+  A
+  W
+  CL
+  EL
+  HOL
+  H
+}
+
+model MonthlyManualAttendanceDay {
+  id                                  Int  @id @default(autoincrement())
+  monthly_manual_attendance_header_id Int
+  monthly_manual_attendance_header   MonthlyManualAttendanceHeader @relation(fields: [monthly_manual_attendance_header_id], references: [id], onDelete: Cascade)
+
+  employee_id                          Int
+  employee                              Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  day_no                                Int
+  status_code                           MonthlyAttendanceStatusCode @default(P)
+
+  created_at                            DateTime? @default(now())
+  updated_at                            DateTime? @updatedAt
+
+  @@unique([monthly_manual_attendance_header_id, employee_id, day_no])
+}
+

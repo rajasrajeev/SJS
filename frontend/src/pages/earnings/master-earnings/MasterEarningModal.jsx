@@ -1,181 +1,193 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import AsyncSelect from "react-select/async";
 
 import DismissableAlert from '../../../components/dashboard/miscellaneous/DismissableAlert';
-import { updateDeduction } from '../../../features/deductionSlice';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
 import TextInput from '../../../components/form/TextInput';
+import CustomDropdown from '../../../components/form/CustomDropdown ';
+
+import { createEarning, updateEarning } from '../../../features/earningSlice';
+
 import '../style.scss';
 
-const MasterEarningModal = ({ show, handleClose, data, types, deductions }) => {
-	const [formData, setFormData] = useState({
-        code: "",
-        acc_code: "",
-        name: "",
-        type: "",
-        amount: "",
-        installment_amt: "",
-        interest: "",
-        id: ""
+const MasterEarningModal = ({ show, handleClose, data }) => {
+  const dispatch = useDispatch();
+  const { loading, earningSuccess, error } = useSelector((store) => store.earning || {});
+
+  const deductionTypeOptions = useMemo(
+    () => [
+      { id: 'Master', name: 'Master' },
+      { id: 'Monthly', name: 'Monthly' },
+    ],
+    []
+  );
+
+  const [formData, setFormData] = useState({
+    code: '',
+    acc_code: '',
+    name: '',
+    type: 'Master',
+    effect_pf: false,
+    effect_csi: false,
+    id: '',
+  });
+
+  useEffect(() => {
+    if (!data) {
+      setFormData({
+        code: '',
+        acc_code: '',
+        name: '',
+        type: 'Master',
+        effect_pf: false,
+        effect_csi: false,
+        id: '',
+      });
+      return;
+    }
+
+    setFormData({
+      code: data.code || '',
+      acc_code: data.acc_code || '',
+      name: data.name || '',
+      type: data.type || 'Master',
+      effect_pf: !!data.effect_pf,
+      effect_csi: !!data.effect_csi,
+      id: data.id,
     });
+  }, [data]);
 
-	const dispatch = useDispatch();
-	const { loading, deductionSuccess, error } = useSelector((store) => store.deduction);
-	const [rows, setRows] = useState([
-        { dept_code: "", emp_code: "", ref_number: "", amount: "", installment: "", interest: "" },
-    ]);
+  useEffect(() => {
+    if (earningSuccess) handleClose();
+  }, [earningSuccess, handleClose]);
 
-	useEffect(() => {
-		if (data) {
-			setFormData({
-                code: data.code,
-                acc_code: data.acc_code,
-                name: data.name,
-                type: data.type,
-                amount: data.amount,
-                installment_amt: data.installment_amt,
-                interest: data.interest,
-                id: data.id
-             });
-		}
-	}, [data]);
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+  };
 
-	useEffect(() => {
-		if (deductionSuccess)
-			handleClose();
-	}, [deductionSuccess]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-	const fetchEmployeeList = async (inputValue) => {
-		if (!inputValue) return [];
-		
-		try {
-		  const response = await fetch(`/api/employees?search=${inputValue}`); // Adjust API endpoint as needed
-		  const data = await response.json();
-		  return data.map(emp => ({ label: emp.name + " (" + emp.code + ")", value: emp.code }));
-		} catch (error) {
-		  console.error("Error fetching employees:", error);
-		  return [];
-		}
-	};
-
-	const handleChange = (e) => {
-		setFormData({ ...formData, [e.target.name]: e.target.value });
-	};
-
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		dispatch(updateDeduction(formData))
-	};
-
-	const handleRowChange = (index, e) => {
-        const updatedRows = [...rows];
-        updatedRows[index][e.target.name] = e.target.value;
-        setRows(updatedRows);
+    const payload = {
+      id: formData.id,
+      code: formData.code,
+      acc_code: formData.acc_code,
+      name: formData.name,
+      type: formData.type,
+      effect_pf: formData.effect_pf,
+      effect_csi: formData.effect_csi,
     };
 
-	const handleAddRow = () => {
-        setRows([...rows, { dept_code: "", emp_code: "", ref_number: "", amount: "", installment: "", interest: "" }]);
-    };
+    if (formData.id) {
+      dispatch(updateEarning(payload));
+    } else {
+      dispatch(createEarning(payload));
+    }
+  };
 
-	const handleRemoveRow = (index) => {
-        const updatedRows = rows.filter((_, i) => i !== index);
-        setRows(updatedRows);
-    };
+  return (
+    <Modal size="lg" show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>{formData.id ? 'Edit Earning' : 'Add Earning'}</Modal.Title>
+      </Modal.Header>
 
-	const handleEmpCodeChange = (index, selectedOption) => {
-		const updatedRows = [...rows];
-		updatedRows[index].emp_code = selectedOption.value;
-		setRows(updatedRows);
-	};
+      <Modal.Body>
+        {error ? <DismissableAlert variant="danger" title="Error" msg={error} /> : null}
 
-	return (
-		<Modal size="lg" show={show} onHide={handleClose} >
-			<Modal.Header closeButton>
-				<Modal.Title>Master Earning</Modal.Title>
-			</Modal.Header>
-			<Modal.Body>
-			{error ? <DismissableAlert variant="danger" title="Error" msg={error}/> : null}
-                <div className='row border-box'>
-					<div className='col-md-4 col-lg-4'>
-						<CustomDropdown
-							label="Earning"
-							name="deduction_id"
-							options={deductions}
-							value={formData.deduction_id}
-							onChange={handleChange}
-							required
-						/>
-					</div>
+        <form onSubmit={handleSubmit}>
+          <div className="row border-box">
+            <div className="col-md-4 col-lg-4">
+              <TextInput
+                label="Code"
+                type="text"
+                name="code"
+                value={formData.code}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-4 col-lg-4">
+              <TextInput
+                label="Account Code"
+                type="text"
+                name="acc_code"
+                value={formData.acc_code}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className="col-md-4 col-lg-4">
+              <TextInput
+                label="Name"
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-					<div className='col-md-4 col-lg-4'>
-                        <TextInput
-                            label="Department"
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                        />
-                    </div>
-					<div className='col-md-4 col-lg-4'>
-                        <TextInput
-                            label="Name"
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                        />
-                    </div>
-                </div>
-				<div className="row">
-					<div className="table-responsive ded-table">
-						<table id="deductionTable" className="table-bordered">
-							<thead>
-								<tr>
-								<th>Dept Code</th>
-								<th>Emploee Code</th>
-								<th>Earning Code</th>
-								<th>Amount</th>
-								<th></th> 
-								</tr>
-							</thead>
-							<tbody>
-							{rows.map((row, index) => (
-								<tr key={index} style={{height: '30px'}}>
-									<td><input type="text" name="dept_code" value={row.dept_code} onChange={(e) => handleRowChange(index, e)} className="form-control tbl" /></td>
-									{/* <td><input type="text" name="emp_code" value={row.emp_code} onChange={(e) => handleRowChange(index, e)} className="form-control tbl" /></td> */}
-									<td style={{width: "200px"}}>
-										{/* <input autoFocus placeholder='EMP CODE' type="text" name="emp_code" value={row.emp_code} onChange={(e) => handleRowChange(index, e)} className="form-control tbl" /> */}
-										<AsyncSelect
-											cacheOptions
-											defaultOptions
-											loadOptions={fetchEmployeeList}
-											onChange={(selectedOption) => handleEmpCodeChange(index, selectedOption)}
-											placeholder="Emp code"
-											className="tbl"
-										/>
-									</td>
-									<td><input type="text" name="emp_name" value={row.ref_number} onChange={(e) => handleRowChange(index, e)} className="form-control tbl" /></td>
-									<td><input type="number" name="interest" value={row.interest} onChange={(e) => handleRowChange(index, e)} className="form-control tbl" /></td>
-									<td>
-										<button disabled={index === 0 ? true : false} className="action-button" onClick={() => handleRemoveRow(index)}>
-											<i className="bx bx-trash" style={index === 0 ? { color: '#fff' } : {color: 'red'}}></i>
-										</button>
-									</td>
-								</tr>
-							))}
-							</tbody>
-						</table>
-					</div>
-				</div>
-				<Button variant="secondary" type="submit" className="mt-3" onClick={handleAddRow} disabled={loading ? true : false}>
-                    Add Row
-                </Button>
-                <Button variant="primary" type="submit" className="mt-3" disabled={loading ? true : false}>
-                    Submit
-                </Button>
-			</Modal.Body>
-		</Modal>
-	);
+            <div className="col-md-6 col-lg-6">
+              <CustomDropdown
+                label="Type"
+                name="type"
+                options={deductionTypeOptions}
+                value={formData.type}
+                onChange={(e) => setFormData((prev) => ({ ...prev, type: e.target.value }))}
+                required
+              />
+            </div>
+
+            <div className="col-md-3 col-lg-3 d-flex align-items-center">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  name="effect_pf"
+                  id="effectPf"
+                  checked={formData.effect_pf}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor="effectPf">
+                  Effect PF
+                </label>
+              </div>
+            </div>
+
+            <div className="col-md-3 col-lg-3 d-flex align-items-center">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  name="effect_csi"
+                  id="effectCsi"
+                  checked={formData.effect_csi}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label" htmlFor="effectCsi">
+                  Effect CSI
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="d-flex justify-content-end gap-2 mt-3">
+            <Button variant="secondary" type="button" onClick={handleClose} disabled={loading ? true : false}>
+              Cancel
+            </Button>
+            <Button variant="primary" type="submit" disabled={loading ? true : false}>
+              Submit
+            </Button>
+          </div>
+        </form>
+      </Modal.Body>
+    </Modal>
+  );
 };
 
 export default MasterEarningModal;
+

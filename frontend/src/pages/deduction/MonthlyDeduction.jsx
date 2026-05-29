@@ -8,9 +8,11 @@ import ConfirmationDialog from '../../components/dashboard/miscellaneous/AlertDi
 import CustomDropdown from '../../components/form/CustomDropdown ';
 import { fetchMasterDeductions } from '../../features/deductionMasterSlice';
 import MonthlyDeductionModal from './MonthlyDeductionModal';
-
+import { fetchEmployees } from '../../features/employeeSlice';
+import { fetchDepartments } from '../../features/departmentSlice';
 
 const MonthlyDeduction = () => {
+
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { data: deductionsMain, loading, error, success: deductionSuccess } = useSelector((store) => store.monthlyDeduction);

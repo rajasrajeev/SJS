@@ -49,10 +49,16 @@ require('./routes/v1/master.routes')(app);
 require('./routes/v1/permission.routes')(app);
 require('./routes/v1/employee.routes')(app);
 require('./routes/v1/deduction.routes')(app);
+require('./routes/v1/options.routes')(app);
+require('./routes/v1/earnings.routes')(app);
+
+
 require('./routes/v1/nightallowance.routes')(app);
 require('./routes/v1/overtimewages.routes')(app);
 require('./routes/v1/promotionwages.routes')(app);
 require('./routes/v1/da.routes')(app);
+require('./routes/v1/attendance.routes')(app);
+
 
 // React fallback route (for SPA routing)
 app.get('*', (req, res) => {

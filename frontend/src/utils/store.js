@@ -21,6 +21,9 @@ import esiSlice from '../features/esiSlice';
 import monthReducer from '../features/monthSlice';
 import monthlyDeductionReducer from '../features/monthlyDeductionSlice';
 import advanceDeductionReducer from '../features/advanceDeductionSlice';
+import attendanceReducer from '../features/attendanceSlice';
+import earningsMonthlyReducer from '../features/earningsMonthlySlice';
+
 
 const store = configureStore({
   reducer: {
@@ -38,6 +41,7 @@ const store = configureStore({
     firm: firmSlice.reducer,
     employee: employeeSlice.reducer,
     deductionMain: deductionMasterMasterSlice.reducer,
+    earningsMonthly: earningsMonthlyReducer,
     da: daSlice.reducer,
     night: nightSlice.reducer,
     overtime: overtimeSlice.reducer,
@@ -46,7 +50,9 @@ const store = configureStore({
     month: monthReducer,
     monthlyDeduction: monthlyDeductionReducer,
     advanceDeduction: advanceDeductionReducer,
+    attendance: attendanceReducer,
   },
 });
+
 
 export default store;

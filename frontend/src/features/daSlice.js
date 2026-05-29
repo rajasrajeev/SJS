@@ -272,11 +272,11 @@ const daSlice = createSlice({
       })
       .addCase(fetchShopDaMaster.fulfilled, (state, action) => {
         state.loading = false;
-        state.shopDaMaster = action.payload;
+        state.shopDaMaster = action.payload.data;
       })
       .addCase(fetchShopDaMaster.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot fetch data";
+        state.error = action.payload.data?.message || "Cannot fetch data";
       })
       .addCase(createShopDaMaster.pending, (state) => {
         state.loading = true;
@@ -285,12 +285,12 @@ const daSlice = createSlice({
       })
       .addCase(createShopDaMaster.fulfilled, (state, action) => {
         state.loading = false;
-        state.shopDaMaster.push(action.payload)
+        state.shopDaMaster.push(action.payload.data)
         state.daSuccess = true;
       })
       .addCase(createShopDaMaster.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot create";
+        state.error = action.payload.data?.message || "Cannot create";
       })
       .addCase(updateShopDaMaster.pending, (state) => {
         state.loading = true;
@@ -300,16 +300,16 @@ const daSlice = createSlice({
       .addCase(updateShopDaMaster.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.shopDaMaster.findIndex(
-          (daPoint) => daPoint.id === action.payload.id
+          (daPoint) => daPoint.id === action.payload.data.id
         );
         if (index !== -1) {
-          state.shopDaMaster[index] = action.payload;
+          state.shopDaMaster[index] = action.payload.data;
         }
         state.daSuccess = true;
       })
       .addCase(updateShopDaMaster.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot update";
+        state.error = action.payload.data?.message || "Cannot update";
       })
       .addCase(deleteShopDaMaster.pending, (state) => {
         state.loading = true;
@@ -317,12 +317,12 @@ const daSlice = createSlice({
       .addCase(deleteShopDaMaster.fulfilled, (state, action) => {
         state.loading = false;
         state.shopDaMaster = state.shopDaMaster.filter(
-          (daPoint) => daPoint.id !== parseInt(action.payload.id)
+          (daPoint) => daPoint.id !== parseInt(action.payload.data.id)
         );
       })
       .addCase(deleteShopDaMaster.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot delete";
+        state.error = action.payload.data?.message || "Cannot delete";
       })
 
       .addCase(fetchFabDaMaster.pending, (state) => {
@@ -331,11 +331,11 @@ const daSlice = createSlice({
       })
       .addCase(fetchFabDaMaster.fulfilled, (state, action) => {
         state.loading = false;
-        state.fabDaMaster = action.payload;
+        state.fabDaMaster = action.payload.data;
       })
       .addCase(fetchFabDaMaster.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot fetch data";
+        state.error = action.payload.data?.message || "Cannot fetch data";
       })
       .addCase(createFabDaMaster.pending, (state) => {
         state.loading = true;
@@ -344,12 +344,12 @@ const daSlice = createSlice({
       })
       .addCase(createFabDaMaster.fulfilled, (state, action) => {
         state.loading = false;
-        state.fabDaMaster.push(action.payload)
+        state.fabDaMaster.push(action.payload.data)
         state.daSuccess = true;
       })
       .addCase(createFabDaMaster.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot create";
+        state.error = action.payload.data?.message || "Cannot create";
       })
       .addCase(updateFabDaMaster.pending, (state) => {
         state.loading = true;
@@ -359,16 +359,16 @@ const daSlice = createSlice({
       .addCase(updateFabDaMaster.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.fabDaMaster.findIndex(
-          (daConstant) => daConstant.id === action.payload.id
+          (daConstant) => daConstant.id === action.payload.data.id
         );
         if (index !== -1) {
-          state.fabDaMaster[index] = action.payload;
+          state.fabDaMaster[index] = action.payload.data;
         }
         state.daSuccess = true;
       })
       .addCase(updateFabDaMaster.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot update";
+        state.error = action.payload.data?.message || "Cannot update";
       })
       .addCase(deleteFabDaMaster.pending, (state) => {
         state.loading = true;
@@ -376,12 +376,12 @@ const daSlice = createSlice({
       .addCase(deleteFabDaMaster.fulfilled, (state, action) => {
         state.loading = false;
         state.fabDaMaster = state.fabDaMaster.filter(
-          (daConstant) => daConstant.id !== parseInt(action.payload.id)
+          (daConstant) => daConstant.id !== parseInt(action.payload.data.id)
         );
       })
       .addCase(deleteFabDaMaster.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot delete";
+        state.error = action.payload.data?.message || "Cannot delete";
       })
 
 
@@ -391,11 +391,11 @@ const daSlice = createSlice({
       })
       .addCase(fetchShopDa.fulfilled, (state, action) => {
         state.loading = false;
-        state.shopDas = action.payload;
+        state.shopDas = action.payload.data;
       })
       .addCase(fetchShopDa.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot fetch data";
+        state.error = action.payload.data?.message || "Cannot fetch data";
       })
       .addCase(createShopDa.pending, (state) => {
         state.loading = true;
@@ -404,12 +404,12 @@ const daSlice = createSlice({
       })
       .addCase(createShopDa.fulfilled, (state, action) => {
         state.loading = false;
-        state.shopDas.push(action.payload)
+        state.shopDas.push(action.payload.data)
         state.daSuccess = true;
       })
       .addCase(createShopDa.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot create";
+        state.error = action.payload.data?.message || "Cannot create";
       })
       .addCase(updateShopDa.pending, (state) => {
         state.loading = true;
@@ -419,16 +419,16 @@ const daSlice = createSlice({
       .addCase(updateShopDa.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.shopDas.findIndex(
-          (shopDa) => shopDa.id === action.payload.id
+          (shopDa) => shopDa.id === action.payload.data.id
         );
         if (index !== -1) {
-          state.shopDas[index] = action.payload;
+          state.shopDas[index] = action.payload.data;
         }
         state.daSuccess = true;
       })
       .addCase(updateShopDa.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot update";
+        state.error = action.payload.data?.message || "Cannot update";
       })
       .addCase(deleteShopDa.pending, (state) => {
         state.loading = true;
@@ -436,12 +436,12 @@ const daSlice = createSlice({
       .addCase(deleteShopDa.fulfilled, (state, action) => {
         state.loading = false;
         state.shopDas = state.shopDas.filter(
-          (shopDa) => shopDa.id !== parseInt(action.payload.id)
+          (shopDa) => shopDa.id !== parseInt(action.payload.data.id)
         );
       })
       .addCase(deleteShopDa.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot delete";
+        state.error = action.payload.data?.message || "Cannot delete";
       })
 
 
@@ -451,43 +451,43 @@ const daSlice = createSlice({
       })
       .addCase(fetchFabDa.fulfilled, (state, action) => {
         state.loading = false;
-        state.fabDas = action.payload;
+        state.fabDas = action.payload.data;
       })
       .addCase(fetchFabDa.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot fetch data";
+        state.error = action.payload.data?.message || "Cannot fetch data";
       })
       .addCase(createFabDa.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.designationSuccess = false;
+        state.daSuccess = false;
       })
       .addCase(createFabDa.fulfilled, (state, action) => {
         state.loading = false;
-        state.fabDas.push(action.payload)
-        state.designationSuccess = true;
+        state.fabDas.push(action.payload.data)
+        state.daSuccess = true;
       })
       .addCase(createFabDa.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot create";
+        state.error = action.payload.data?.message || "Cannot create";
       })
       .addCase(updateFabDa.pending, (state) => {
         state.loading = true;
         state.error = null;
-        state.designationSuccess = false;
+        state.daSuccess = false;
       })
       .addCase(updateFabDa.fulfilled, (state, action) => {
         const index = state.fabDas.findIndex(
-          (fabda) => fabda.id === action.payload.id
+          (fabda) => fabda.id === action.payload.data.id
         );
         if (index !== -1) {
-          state.fabDas[index] = action.payload;
+          state.fabDas[index] = action.payload.data;
         }
-        state.designationSuccess = true;
+        state.daSuccess = true;
       })
       .addCase(updateFabDa.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot update";
+        state.error = action.payload.data?.message || "Cannot update";
       })
       .addCase(deleteFabDa.pending, (state) => {
         state.loading = true;
@@ -495,12 +495,12 @@ const daSlice = createSlice({
       .addCase(deleteFabDa.fulfilled, (state, action) => {
         state.loading = false;
         state.fabDas = state.fabDas.filter(
-          (fabda) => fabda.id !== parseInt(action.payload.id)
+          (fabda) => fabda.id !== parseInt(action.payload.data.id)
         );
       })
       .addCase(deleteFabDa.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Cannot delete";
+        state.error = action.payload.data?.message || "Cannot delete";
       })
 //ida
 .addCase(fetchIDa.pending, (state) => {
@@ -509,43 +509,43 @@ const daSlice = createSlice({
 })
 .addCase(fetchIDa.fulfilled, (state, action) => {
   state.loading = false;
-  state.fabDas = action.payload;
+  state.fabDas = action.payload.data;
 })
 .addCase(fetchIDa.rejected, (state, action) => {
   state.loading = false;
-  state.error = action.payload?.message || "Cannot fetch data";
+  state.error = action.payload.data?.message || "Cannot fetch data";
 })
 .addCase(createIDa.pending, (state) => {
   state.loading = true;
   state.error = null;
-  state.designationSuccess = false;
+  state.daSuccess = false;
 })
 .addCase(createIDa.fulfilled, (state, action) => {
   state.loading = false;
-  state.fabDas.push(action.payload)
-  state.designationSuccess = true;
+  state.fabDas.push(action.payload.data)
+  state.daSuccess = true;
 })
 .addCase(createIDa.rejected, (state, action) => {
   state.loading = false;
-  state.error = action.payload?.message || "Cannot create";
+  state.error = action.payload.data?.message || "Cannot create";
 })
 .addCase(updateIDa.pending, (state) => {
   state.loading = true;
   state.error = null;
-  state.designationSuccess = false;
+  state.daSuccess = false;
 })
 .addCase(updateIDa.fulfilled, (state, action) => {
   const index = state.iDas.findIndex(
-    (fabda) => fabda.id === action.payload.id
+    (fabda) => fabda.id === action.payload.data.id
   );
   if (index !== -1) {
-    state.iDas[index] = action.payload;
+    state.iDas[index] = action.payload.data;
   }
-  state.designationSuccess = true;
+  state.daSuccess = true;
 })
 .addCase(updateIDa.rejected, (state, action) => {
   state.loading = false;
-  state.error = action.payload?.message || "Cannot update";
+  state.error = action.payload.data?.message || "Cannot update";
 })
 .addCase(deletIDa.pending, (state) => {
   state.loading = true;
@@ -553,12 +553,12 @@ const daSlice = createSlice({
 .addCase(deletIDa.fulfilled, (state, action) => {
   state.loading = false;
   state.fabDas = state.iDas.filter(
-    (fabda) => fabda.id !== parseInt(action.payload.id)
+    (fabda) => fabda.id !== parseInt(action.payload.data.id)
   );
 })
 .addCase(deletIDa.rejected, (state, action) => {
   state.loading = false;
-  state.error = action.payload?.message || "Cannot delete";
+  state.error = action.payload.data?.message || "Cannot delete";
 })
 
   },

@@ -12,6 +12,8 @@ import { clearFirm, fetchFirm, updateFirm } from "../../../features/firmSlice";
 import { datePickerFormat } from "../../../utils/dateFormat";
 import DismissableAlert from "../../../components/dashboard/miscellaneous/DismissableAlert";
 import RichTextField from "../../../components/form/RichTextField";
+import { fetchFirmStatusOptions, fetchFirmTypeOptions } from '../../../features/optionsSlice';
+
 
 const FirmProfileUpdate = () => {
     const dispatch = useDispatch();
@@ -40,17 +42,8 @@ const FirmProfileUpdate = () => {
         firm_type: 'SHOP'
     });
 
-    const firmStatusOptions = [
-        { name: "Proprietor", id: "PROPRIETOR" },
-        { name: "Partnership", id: "PARTNERSHIP" },
-        { name: "Company", id: "COMPANY" },
-        { name: "Others", id: "OTHER" },
-    ];
-    const firmType = [
-        { name: "SHOP", id: "SHOP" },
-        { name: "FAB", id: "FAB" },
-        { name: "OTHER", id: "OTHER" },
-    ];
+    const { firmStatusOptions, firmTypeOptions } = useSelector((store) => store.options || {});
+
 
     const { countries, states, districts } = useSelector((store) => store.location);
     const { loading, error, firm, firmSuccess } = useSelector((store) => store.firm);
@@ -58,11 +51,14 @@ const FirmProfileUpdate = () => {
     useEffect(() => {
         dispatch(fetchFirm());
         dispatch(fetchCountries());
+        dispatch(fetchFirmStatusOptions());
+        dispatch(fetchFirmTypeOptions());
 
         return () => {
             dispatch(clearFirm());
         }
     }, []);
+
 
     useEffect(() => {
         if (firm !== null) {
@@ -91,10 +87,11 @@ const FirmProfileUpdate = () => {
                 land_phone: firm.land_phone,
                 reg_no: firm.reg_no,
                 pin: firm.pin,
-                firm_type: 'SHOP'
+                firm_type: firm.firm_type || 'SHOP'
             })
         }
     }, [firm]);
+
 
     const handleCountryChange = (e) => {
         const { name, value } = e.target;
@@ -137,6 +134,7 @@ const FirmProfileUpdate = () => {
         blobData.append("fdb_no", formData.fdb_no);
         blobData.append("firm_status", formData.firm_status);
         blobData.append("firm_type", formData.firm_type || 'SHOP');
+
         blobData.append("incorporation_no", formData.incorporation_no);
         blobData.append("gst_no", formData.gst_no);
         blobData.append("other_license", formData.other_license);
@@ -271,12 +269,13 @@ const FirmProfileUpdate = () => {
                             <CustomDropdown
                                 label="Firm Status"
                                 name="firm_status"
-                                options={firmStatusOptions}
+                                options={firmStatusOptions || []}
                                 value={formData.firm_status}
                                 onChange={handleChange}
                                 required
                                 leftLabel={true}
                             />
+
                         </div>
                         <div className="col-md-3">
                             <DatePicker

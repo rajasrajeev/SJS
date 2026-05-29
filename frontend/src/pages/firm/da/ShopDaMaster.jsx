@@ -133,7 +133,7 @@ const ShopDaMaster = () => {
         },
         {
             name: 'Rate/Da',
-            selector: (row) => row.fixed || 'N/A',
+            selector: (row) => row.rate || 'N/A',
             sortable: true,
             width: '150px',
         },

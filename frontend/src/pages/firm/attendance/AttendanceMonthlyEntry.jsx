@@ -7,6 +7,8 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEmployees } from "../../../features/employeeSlice";
 import { fetchLeaves } from "../../../features/leaveSlice";
+import { upsertMonthlyManualAttendance, fetchMonthlyManualAttendance } from "../../../features/attendanceSlice";
+
 
 const AttendanceMonthlyEntry = () => {
   const navigate = useNavigate();
@@ -38,6 +40,14 @@ const AttendanceMonthlyEntry = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [presentMarkingOptions, setPresentMarkingOptions] = useState([]);
 
+  const {
+    monthlyManual,
+    loading: attendanceLoading,
+    success: attendanceSaveSuccess,
+    error: attendanceError,
+  } = useSelector((state) => state.attendance || {});
+
+
   const dummyEmployees = [
     { tno: "001", name: "John Doe" },
     { tno: "002", name: "Jane Smith" },
@@ -50,16 +60,18 @@ const AttendanceMonthlyEntry = () => {
   }, [dispatch]);
 
   useEffect(() => {
-            // Set default present marking options remove when API is available
-            setPresentMarkingOptions([   
-              { "id": 1, "code": "P", "name": "Present" },
-              { "id": 2, "code": "A", "name": "Absent" },
-               { "id": 3, "code": "W", "name": "Weekly Off" },
-              { "id": 4, "code": "CL", "name": "Casual Leave" },
-              { "id": 5, "code": "EL", "name": "Earned Leave" },
-              { "id": 6, "code": "HOL", "name": "Holiday" },
-              { "id": 7, "code": "H", "name": "Half Day" }]);
-    // Append "Present" and "Absent" to the fetched leave options
+    // Set default present marking options remove when API is available
+    setPresentMarkingOptions([
+      { id: 1, code: "P", name: "Present" },
+      { id: 2, code: "A", name: "Absent" },
+      { id: 3, code: "W", name: "Weekly Off" },
+      { id: 4, code: "CL", name: "Casual Leave" },
+      { id: 5, code: "EL", name: "Earned Leave" },
+      { id: 6, code: "HOL", name: "Holiday" },
+      { id: 7, code: "H", name: "Half Day" },
+    ]);
+
+    // Append fetched leave options if available
     if (!leaveLoading && leaves.length > 0) {
       const updatedOptions = [
         { id: "P", code: "P", name: "P (Present)" },
@@ -74,19 +86,44 @@ const AttendanceMonthlyEntry = () => {
     }
   }, [leaves, leaveLoading]);
 
+
   useEffect(() => {
     // Fetch employee data from the backend
     dispatch(fetchEmployees());
   }, [dispatch]);
 
   useEffect(() => {
+    // Load saved attendance for selected month/year
+    if (!selectedMonth || !currentYear) return;
+    dispatch(fetchMonthlyManualAttendance({ month: selectedMonth, year: currentYear }));
+  }, [dispatch, selectedMonth, currentYear]);
+
+
+  useEffect(() => {
     // Use fetched employees or fallback to dummy data
     const employeeData = employees?.data?.length > 0 ? employees.data : dummyEmployees;
 
     // Initialize attendance data with employee names and TNOs
-    const initialData = generateInitialData(employeeData, daysInMonth);
+    let initialData = generateInitialData(employeeData, daysInMonth);
+
+    // If API has saved attendance for this month/year, load it
+    if (monthlyManual?.data?.length > 0) {
+      const savedByTno = new Map(
+        (monthlyManual.data || []).map((r) => [String(r.tno), r])
+      );
+
+      initialData = initialData.map((row) => {
+        const saved = savedByTno.get(String(row.tno));
+        if (!saved || !Array.isArray(saved.days)) return row;
+        return { ...row, days: saved.days.slice(0, daysInMonth) };
+      });
+
+      initialData = calculateAttendance(initialData);
+    }
+
     setData(initialData);
-  }, [employees, daysInMonth]);
+  }, [employees, daysInMonth, monthlyManual]);
+
 
   useEffect(() => {
     setDaysInMonth(months.find((m) => m.id === selectedMonth).days);
@@ -239,15 +276,20 @@ const AttendanceMonthlyEntry = () => {
   ];
 
   const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append("month", selectedMonth);
-    formData.append("year", currentYear);
-    formData.append("attendanceData", JSON.stringify(data));
+    const payload = {
+      month: selectedMonth,
+      year: currentYear,
+      attendanceData: data.map((row) => ({
+        tno: row.tno,
+        name: row.name,
+        days: row.days,
+      })),
+    };
 
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-    }
+    // Server expects JSON payload
+    dispatch(upsertMonthlyManualAttendance(payload));
   };
+
 
   const handlePresentMarkingChange = (e) => {
     const selectedMarking = e.target.value;

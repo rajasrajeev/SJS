@@ -10,7 +10,9 @@ import CustomDropdown from '../../components/form/CustomDropdown ';
 import TextInput from '../../components/form/TextInput';
 import axiosInstance from '../../utils/axios';
 import { fetchBranches } from '../../features/branchSlice';
+import { fetchMonths } from '../../features/optionsSlice';
 import './style.scss';
+
 
 const MasterDeductionModal = ({ show, handleClose, data, types, deductions }) => {
 	
@@ -38,6 +40,8 @@ const MasterDeductionModal = ({ show, handleClose, data, types, deductions }) =>
 	const { loading, error, deductionSuccess } = useSelector((store) => store.deductionMain);
 	const { branches } = useSelector((store) => store.branch);
 	const { selectedMonth } = useSelector((store) => store.month || {});
+	const { months: monthOptions = [] } = useSelector((store) => store.options || {});
+
 
 	const [rows, setRows] = useState([
         { dept_code: "", emp_code: "", ref_number: "", amount: "", installment: "", interest: "" },
@@ -45,7 +49,9 @@ const MasterDeductionModal = ({ show, handleClose, data, types, deductions }) =>
 
 	  useEffect(() => {
 		dispatch(fetchBranches());
+		dispatch(fetchMonths());
 	  }, []);
+
 
 	useEffect(() => {
 		if (data) {
@@ -91,18 +97,26 @@ const MasterDeductionModal = ({ show, handleClose, data, types, deductions }) =>
 	}, [deductionSuccess]);
 
 	useEffect(() => {
-		if(selectedMonth) {
-			// Parse selectedMonth in "YYYY-MM" format to month name and year
+		if(selectedMonth && Array.isArray(monthOptions) && monthOptions.length > 0) {
+			// selectedMonth expected: "YYYY-MM"
 			const [year, monthNum] = selectedMonth.split('-');
-			const monthNames = [
-				"January", "February", "March", "April", "May", "June",
-				"July", "August", "September", "October", "November", "December"
-			];
-			const monthName = monthNames[parseInt(monthNum, 10) - 1] || "";
+			const padded = String(monthNum).padStart(2, '0');
 
-			setFormData(prev => ({ ...prev, month: monthName, year: parseInt(year, 10) }));
+			// monthOptions from backend are like { id: 'January', name: 'January', days: 31 }
+			const monthName = monthOptions.find((m) => {
+				const mm = String(m.id)
+					.slice(0, 3)
+					.toLowerCase();
+				const map = {
+					'jan': '01', 'feb': '02', 'mar': '03', 'apr': '04', 'may': '05', 'jun': '06',
+					'jul': '07', 'aug': '08', 'sep': '09', 'oct': '10', 'nov': '11', 'dec': '12',
+				};
+				return map[mm] === padded;
+			})?.name;
+
+			setFormData(prev => ({ ...prev, month: monthName || "", year: parseInt(year, 10) }));
 		}
-	}, [selectedMonth]);
+	}, [selectedMonth, monthOptions]);
 
 	const handleChange = (e) => {
 		const { name, value, type, checked } = e.target;

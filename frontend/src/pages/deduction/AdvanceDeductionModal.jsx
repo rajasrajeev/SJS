@@ -7,6 +7,8 @@ import DismissableAlert from '../../components/dashboard/miscellaneous/Dismissab
 import { updateAdvanceDeduction, createAdvanceDeduction } from '../../features/advanceDeductionSlice';
 import CustomDropdown from '../../components/form/CustomDropdown ';
 import TextInput from '../../components/form/TextInput';
+import axiosInstance from '../../utils/axios';
+
 
 
 const AdvanceDeductionModal = ({ show, handleClose, data, types, deductions }) => {
@@ -65,18 +67,26 @@ const AdvanceDeductionModal = ({ show, handleClose, data, types, deductions }) =
 			handleClose();
 	}, [deductionSuccess]);
 
+
 	const fetchEmployeeList = async (inputValue) => {
-		if (!inputValue) return [];
-		
+		if (!inputValue || inputValue.length <= 1) return [];
 		try {
-		  const response = await fetch(`/api/employees?search=${inputValue}`); // Adjust API endpoint as needed
-		  const data = await response.json();
-		  return data.map(emp => ({ label: emp.name + " (" + emp.code + ")", value: emp.code }));
+			// Backend mini endpoint
+			// GET /api/v1/employee/mini?emp_code=...
+			const response = await axiosInstance.get(`/employee/mini?emp_code=${inputValue}`);
+			const data = response.data || [];
+			return data.map((emp) => ({
+				label: `${emp.pno} (${emp.name})`,
+				value: `${emp.pno}`,
+				// keep raw for any extra mapping
+				raw: emp,
+			}));
 		} catch (error) {
-		  console.error("Error fetching employees:", error);
-		  return [];
+			console.error('Error fetching employees:', error);
+			return [];
 		}
 	};
+
 
 	const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
