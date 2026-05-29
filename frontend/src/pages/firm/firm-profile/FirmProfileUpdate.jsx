@@ -46,6 +46,11 @@ const FirmProfileUpdate = () => {
         { name: "Company", id: "COMPANY" },
         { name: "Others", id: "OTHER" },
     ];
+    const firmType = [
+        { name: "SHOP", id: "SHOP" },
+        { name: "FAB", id: "FAB" },
+        { name: "OTHER", id: "OTHER" },
+    ];
 
     const { countries, states, districts } = useSelector((store) => store.location);
     const { loading, error, firm, firmSuccess } = useSelector((store) => store.firm);
@@ -86,7 +91,7 @@ const FirmProfileUpdate = () => {
                 land_phone: firm.land_phone,
                 reg_no: firm.reg_no,
                 pin: firm.pin,
-                firm_type: firm.firm_type
+                firm_type: 'SHOP'
             })
         }
     }, [firm]);
@@ -131,7 +136,7 @@ const FirmProfileUpdate = () => {
         blobData.append("web", formData.web);
         blobData.append("fdb_no", formData.fdb_no);
         blobData.append("firm_status", formData.firm_status);
-        blobData.append("firm_type", formData.firm_type);
+        blobData.append("firm_type", formData.firm_type || 'SHOP');
         blobData.append("incorporation_no", formData.incorporation_no);
         blobData.append("gst_no", formData.gst_no);
         blobData.append("other_license", formData.other_license);
