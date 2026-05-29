@@ -590,9 +590,6 @@ model Employee {
 
   monthlyManualAttendanceDay            MonthlyManualAttendanceDay[]
 
-  earningMonthlyMaster           EarningMonthlyMaster[]
-  earningMonthlyMonthly          EarningMonthlyMonthly[]
-
   earningEmployeeMonthlyMaster    EarningEmployeeMonthlyMaster[]
   earningEmployeeMonthlyMonthly   EarningEmployeeMonthlyMonthly[]
 
