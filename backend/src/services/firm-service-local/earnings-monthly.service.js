@@ -237,17 +237,9 @@ const createEarningMonthlyService = async (body) => {
     orderBy: { id: 'desc' },
   });
 
-  // Flatten master employees (if multiple masters match, last one wins by emp_id)
-  const empMap = new Map();
-  for (const m of masters) {
-    for (const e of m.employees || []) {
-      empMap.set(e.emp_id, e.earning_amt);
-    }
-  }
-
-  const employeesToCreate = Array.from(empMap.entries()).map(([emp_id, earning_amt]) => ({
-    emp_id: parseInt(emp_id),
-    earning_amt: parseFloat(earning_amt ?? 0),
+  const employeesToCreate = (body.employees || []).map((e) => ({
+    emp_id: parseInt(e.emp_id),
+    earning_amt: parseFloat(e.earning_amt || 0),
   }));
 
   // Use branch/department from request if present; else fallback from first master

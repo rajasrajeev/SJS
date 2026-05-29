@@ -9,7 +9,7 @@ import DismissableAlert from '../../../components/dashboard/miscellaneous/Dismis
 import TextInput from '../../../components/form/TextInput';
 import CustomDropdown from '../../../components/form/CustomDropdown ';
 
-import { createMonthlyEarning, updateMonthlyEarning } from '../../../features/earningsMonthlySlice';
+import { createMonthlyEarning, updateMonthlyEarning, fetchMonthlyEarnings } from '../../../features/earningsMonthlySlice';
 
 import '../style.scss';
 
