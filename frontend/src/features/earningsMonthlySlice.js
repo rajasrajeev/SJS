@@ -184,6 +184,18 @@ const earningsMonthlySlice = createSlice({
       .addCase(createMonthlyEarning.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || 'Cannot create monthly earning';
+      })
+      .addCase(fetchMonthlyEarnings.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMonthlyEarnings.fulfilled, (state, action) => {
+        state.loading = false;
+        state.monthlyEarnings = action.payload;
+      })
+      .addCase(fetchMonthlyEarnings.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || 'Cannot fetch monthly earnings';
       });
   },
 });
