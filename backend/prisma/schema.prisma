@@ -82,6 +82,7 @@ model Firm {
 }
 
 model Branch {
+
   id               Int        @id @default(autoincrement())
   name             String
   firm             Firm?      @relation(fields: [firm_id], references: [id], onDelete: Cascade)
@@ -120,6 +121,9 @@ model Branch {
   daMonthlyShop            DaMonthlyShop[]
   daMonthlyFab             DaMonthlyFab[]
   daMonthlyIda             DaMonthlyIda[]
+
+  earningMonthlyMaster          EarningMonthlyMaster[]
+  earningMonthlyMonthly        EarningMonthlyMonthly[]
 }
 
 // Can used for both admin staff and firm CA staffs
@@ -284,6 +288,9 @@ model Department {
   deductionMonthlyMaster          DeductionMonthlyMaster[]
   deductionMonthlyMonthly         DeductionMonthlyMonthly[]
   deductionMonthlyAdvance         DeductionMonthlyAdvance[]
+
+  earningMonthlyMaster          EarningMonthlyMaster[]
+  earningMonthlyMonthly        EarningMonthlyMonthly[]
 }
 
 model Designation {
@@ -440,9 +447,13 @@ model Earnings {
   effect_pf                       Boolean                 @default(false)
   effect_csi                      Boolean                 @default(false)
 
+  earningMonthlyMaster          EarningMonthlyMaster[]
+  earningMonthlyMonthly        EarningMonthlyMonthly[]
+
   created_at                      DateTime?               @default(now())
   updated_at                      DateTime?               @updatedAt
 }
+
 
 enum EarningsType {
   Master
@@ -578,6 +589,12 @@ model Employee {
   overtimeWagesMonthly            OvertimeWagesMonthly[]
 
   monthlyManualAttendanceDay            MonthlyManualAttendanceDay[]
+
+  earningMonthlyMaster           EarningMonthlyMaster[]
+  earningMonthlyMonthly          EarningMonthlyMonthly[]
+
+  earningEmployeeMonthlyMaster    EarningEmployeeMonthlyMaster[]
+  earningEmployeeMonthlyMonthly   EarningEmployeeMonthlyMonthly[]
 
   created_at                      DateTime?               @default(now())
   updated_at                      DateTime?               @updatedAt
