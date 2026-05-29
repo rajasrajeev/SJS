@@ -209,34 +209,56 @@ const getEarningMonthlyDetailsService = async (id) => {
 };
 
 const createEarningMonthlyService = async (body) => {
-  // Process only employees that exist in EarningMonthlyMaster for given earning_id + month/year.
+  // Rule: master applies always; monthly should exist for payroll month.
+  // So when creating/updating monthly, we always create employee rows for ALL employees
+  // present in EarningMonthlyMaster for that earning_id (and matching scope), with
+  // amount = master.amount if provided, else 0.
+
   const monthDate = getMonthDateRange(body.month, body.year || new Date().getFullYear());
   if (!monthDate) throw { status: 400, message: 'Invalid month/year' };
 
-  const master = await prisma.earningMonthlyMaster.findFirst({
+  const masters = await prisma.earningMonthlyMaster.findMany({
     where: {
       earning_id: parseInt(body.earning_id),
-      month: { gte: monthDate.start, lte: monthDate.start },
+      ...(body.branch_id ? { branch_id: parseInt(body.branch_id) } : { branch_id: null }),
+      ...(body.department_id
+        ? { department_id: parseInt(body.department_id) }
+        : { department_id: null }),
+      // master is month-independent for processing; use master rows as defined for employees
+      // but keep date filter off
     },
-    include: { employees: true },
+    include: {
+      employees: true,
+    },
+    orderBy: { id: 'desc' },
   });
 
-  if (!master) {
-    // If no master employees exists for that month, do nothing.
-    return { status: 'skipped', reason: 'No earning master employees for this month' };
+  // Flatten master employees (if multiple masters match, last one wins by emp_id)
+  const empMap = new Map();
+  for (const m of masters) {
+    for (const e of m.employees || []) {
+      empMap.set(e.emp_id, e.earning_amt);
+    }
   }
+
+  const employeesToCreate = Array.from(empMap.entries()).map(([emp_id, earning_amt]) => ({
+    emp_id: parseInt(emp_id),
+    earning_amt: parseFloat(earning_amt ?? 0),
+  }));
+
+  // Use branch/department from request if present; else fallback from first master
+  const fallbackMaster = masters[0];
 
   const created = await prisma.earningMonthlyMonthly.create({
     data: {
       earning_id: parseInt(body.earning_id),
-      branch_id: master.branch_id,
-      department_id: master.department_id,
+      branch_id: body.branch_id ? parseInt(body.branch_id) : fallbackMaster?.branch_id ?? null,
+      department_id: body.department_id
+        ? parseInt(body.department_id)
+        : fallbackMaster?.department_id ?? null,
       month: monthDate.start,
       employees: {
-        create: master.employees.map((r) => ({
-          emp_id: r.emp_id,
-          earning_amt: r.earning_amt,
-        })),
+        create: employeesToCreate,
       },
     },
     include: {
@@ -250,31 +272,65 @@ const createEarningMonthlyService = async (body) => {
   return created;
 };
 
+
 const updateEarningMonthlyService = async (id, body) => {
-  // Simple update: wipe and recreate employee rows based on provided rows.
-  // You can later align with master processing behavior.
+  // Rule: master applies always; monthly should exist for payroll month.
+  // For update: recreate employee rows for ALL employees present in EarningMonthlyMaster
+  // for the given earning_id/scope, and set earning_amt = (payload override) else 0.
+
   const existing = await prisma.earningMonthlyMonthly.findUnique({ where: { id: parseInt(id) } });
   if (!existing) throw { status: 404, message: 'Record not found' };
 
   const monthDate = getMonthDateRange(body.month, body.year || new Date().getFullYear());
   if (!monthDate) throw { status: 400, message: 'Invalid month/year' };
 
+  const masters = await prisma.earningMonthlyMaster.findMany({
+    where: {
+      earning_id: parseInt(body.earning_id),
+      ...(body.branch_id ? { branch_id: parseInt(body.branch_id) } : { branch_id: null }),
+      ...(body.department_id
+        ? { department_id: parseInt(body.department_id) }
+        : { department_id: null }),
+    },
+    include: { employees: true },
+  });
+
+  const empMapMaster = new Map();
+  for (const m of masters) {
+    for (const e of m.employees || []) {
+      empMapMaster.set(e.emp_id, e.earning_amt);
+    }
+  }
+
+  const payloadEmpMap = new Map();
+  for (const e of body.employees || []) {
+    if (e?.emp_id == null) continue;
+    payloadEmpMap.set(parseInt(e.emp_id), parseFloat(e.earning_amt ?? 0));
+  }
+
+  const employeesToCreate = Array.from(empMapMaster.keys()).map((emp_id) => {
+    const overrideAmt = payloadEmpMap.get(emp_id);
+    return {
+      emp_id: parseInt(emp_id),
+      earning_amt: parseFloat(overrideAmt ?? 0),
+    };
+  });
+
   await prisma.earningEmployeeMonthlyMonthly.deleteMany({
     where: { earning_monthly_monthly_id: parseInt(id) },
   });
+
+  const fallbackMaster = masters[0];
 
   const rec = await prisma.earningMonthlyMonthly.update({
     where: { id: parseInt(id) },
     data: {
       earning_id: parseInt(body.earning_id),
-      branch_id: body.branch_id ? parseInt(body.branch_id) : null,
-      department_id: body.department_id ? parseInt(body.department_id) : null,
+      branch_id: body.branch_id ? parseInt(body.branch_id) : fallbackMaster?.branch_id ?? null,
+      department_id: body.department_id ? parseInt(body.department_id) : fallbackMaster?.department_id ?? null,
       month: monthDate.start,
       employees: {
-        create: (body.employees || []).map((e) => ({
-          emp_id: parseInt(e.emp_id),
-          earning_amt: parseFloat(e.earning_amt || 0),
-        })),
+        create: employeesToCreate,
       },
     },
     include: {
@@ -287,6 +343,7 @@ const updateEarningMonthlyService = async (id, body) => {
 
   return rec;
 };
+
 
 const deleteEarningMonthlyService = async (id) => {
   const rec = await prisma.earningMonthlyMonthly.delete({ where: { id: parseInt(id) } });

@@ -519,22 +519,87 @@ const createDeductionMonthlyMonthly = async (data) => {
         if (error) {
             throw ({ status: 400, message: error.message });
         }
-        const masterData = prepareDeductionMonthlyMasterDataAlt(value);
-        const deductionMonthlyMonthly = await prisma.deductionMonthlyMonthly.create({
-            data: masterData
+
+        // Rule: master applies always; monthly rows must exist for payroll month,
+        // with missing employee overrides treated as 0.
+        // We create deductionMonthlyMonthly header, then create employee rows for ALL
+        // employees present in matching DeductionMonthlyMaster.
+
+        const monthDate = getMonthDateRange(value.month, value.year || new Date().getFullYear());
+        if (!monthDate) throw ({ status: 400, message: 'Invalid month/year' });
+
+        const masters = await prisma.deductionMonthlyMaster.findMany({
+            where: {
+                deduction_id: parseInt(value.deduction_id),
+                ...(value.branch_id ? { branch_id: parseInt(value.branch_id) } : { branch_id: null }),
+                ...(value.department_id
+                    ? { department_id: parseInt(value.department_id) }
+                    : { department_id: null }),
+            },
+            include: { deductionEmployeeMonthlyMaster: true },
         });
-        if (value.employees && Array.isArray(value.employees)) {
-            const employeeDeductions = value.employees.map(emp => ({
-                deduction_monthly_monthly_id: deductionMonthlyMonthly.id,
-                emp_id: parseInt(emp.emp_id),
-                deduction_amt: parseFloat(emp.deduction_amt || 0),
-                installment_amt: emp.installment_amt ? parseFloat(emp.installment_amt) : null,
-                interest_percentage: emp.interest_percentage ? parseFloat(emp.interest_percentage) : null,
-            }));
-            await prisma.deductionEmployeeMonthlyMonthly.createMany({
-                data: employeeDeductions
+
+        const empMap = new Map();
+        for (const m of masters) {
+            for (const row of m.deductionEmployeeMonthlyMaster || []) {
+                empMap.set(row.emp_id, {
+                    deduction_amt: row.deduction_amt,
+                    installment_amt: row.installment_amt,
+                    interest_percentage: row.interest_percentage,
+                });
+            }
+        }
+
+        // payload overrides come from value.employees (if present)
+        const payloadMap = new Map();
+        for (const row of value.employees || []) {
+            if (row?.emp_id == null) continue;
+            payloadMap.set(parseInt(row.emp_id), {
+                deduction_amt: parseFloat(row.deduction_amt ?? 0),
+                installment_amt: row.installment_amt != null ? parseFloat(row.installment_amt) : null,
+                interest_percentage: row.interest_percentage != null ? parseFloat(row.interest_percentage) : null,
             });
         }
+
+        const employeesToCreate = Array.from(empMap.keys()).map((emp_id) => {
+            const override = payloadMap.get(emp_id);
+            return {
+                emp_id: parseInt(emp_id),
+                deduction_amt: parseFloat(override?.deduction_amt ?? empMap.get(emp_id).deduction_amt ?? 0),
+                installment_amt:
+                    override?.installment_amt != null ? override.installment_amt : (empMap.get(emp_id).installment_amt ?? null),
+                interest_percentage:
+                    override?.interest_percentage != null
+                        ? override.interest_percentage
+                        : (empMap.get(emp_id).interest_percentage ?? null),
+            };
+        });
+
+        const masterData = prepareDeductionMonthlyMasterDataAlt({
+            ...value,
+            month: value.month,
+            year: value.year,
+        });
+
+        const deductionMonthlyMonthly = await prisma.deductionMonthlyMonthly.create({
+            data: {
+                ...masterData,
+                month: monthDate.start,
+            },
+        });
+
+        if (employeesToCreate.length) {
+            await prisma.deductionEmployeeMonthlyMonthly.createMany({
+                data: employeesToCreate.map((emp) => ({
+                    deduction_monthly_monthly_id: deductionMonthlyMonthly.id,
+                    emp_id: emp.emp_id,
+                    deduction_amt: parseFloat(emp.deduction_amt || 0),
+                    installment_amt: emp.installment_amt,
+                    interest_percentage: emp.interest_percentage,
+                })),
+            });
+        }
+
         return await prisma.deductionMonthlyMonthly.findUnique({
             where: { id: deductionMonthlyMonthly.id },
             include: {
@@ -554,6 +619,7 @@ const createDeductionMonthlyMonthly = async (data) => {
     }
 };
 
+
 const updateDeductionMonthlyMonthly = async (id, data) => {
     try {
         const existing = await prisma.deductionMonthlyMonthly.findUnique({
@@ -562,39 +628,98 @@ const updateDeductionMonthlyMonthly = async (id, data) => {
         if (!existing) {
             throw ({ status: 404, message: "Record not found" });
         }
+
         const { error, value } = deductionMonthlyMonthlySchema.validate(data);
         if (error) {
             throw ({ status: 400, message: error.message });
         }
+
         const result = await prisma.$transaction(async (tx) => {
-            const masterData = prepareDeductionMonthlyMasterDataAlt(value);
-            const deductionMonthlyMonthly = await prisma.deductionMonthlyMonthly.update({
-                where: { id: parseInt(id) },
-                data: masterData
+            // Recreate employee deduction rows for ALL employees present in matching DeductionMonthlyMaster
+            // for this deduction/scope, and apply overrides from payload; missing => 0.
+
+            const monthDate = getMonthDateRange(value.month, value.year || new Date().getFullYear());
+            if (!monthDate) throw ({ status: 400, message: 'Invalid month/year' });
+
+            const masters = await prisma.deductionMonthlyMaster.findMany({
+                where: {
+                    deduction_id: parseInt(value.deduction_id),
+                    ...(value.branch_id ? { branch_id: parseInt(value.branch_id) } : { branch_id: null }),
+                    ...(value.department_id
+                        ? { department_id: parseInt(value.department_id) }
+                        : { department_id: null }),
+                },
+                include: { deductionEmployeeMonthlyMaster: true },
             });
-            if (value.employees && Array.isArray(value.employees)) {
-                await prisma.deductionEmployeeMonthlyMonthly.deleteMany({
-                    where: { deduction_monthly_monthly_id: parseInt(id) }
-                });
-                const employeeDeductions = value.employees.map(emp => ({
-                    deduction_monthly_monthly_id: parseInt(id),
-                    emp_id: parseInt(emp.emp_id),
-                    deduction_amt: parseFloat(emp.deduction_amt || 0),
-                    installment_amt: emp.installment_amt ? parseFloat(emp.installment_amt) : null,
-                    interest_percentage: emp.interest_percentage ? parseFloat(emp.interest_percentage) : null,
-                }));
-                await prisma.deductionEmployeeMonthlyMonthly.createMany({
-                    data: employeeDeductions
+
+            const empMap = new Map();
+            for (const m of masters) {
+                for (const row of m.deductionEmployeeMonthlyMaster || []) {
+                    empMap.set(row.emp_id, {
+                        deduction_amt: row.deduction_amt,
+                        installment_amt: row.installment_amt,
+                        interest_percentage: row.interest_percentage,
+                    });
+                }
+            }
+
+            const payloadMap = new Map();
+            for (const row of value.employees || []) {
+                if (row?.emp_id == null) continue;
+                payloadMap.set(parseInt(row.emp_id), {
+                    deduction_amt: parseFloat(row.deduction_amt ?? 0),
+                    installment_amt: row.installment_amt != null ? parseFloat(row.installment_amt) : null,
+                    interest_percentage: row.interest_percentage != null ? parseFloat(row.interest_percentage) : null,
                 });
             }
+
+            await prisma.deductionEmployeeMonthlyMonthly.deleteMany({
+                where: { deduction_monthly_monthly_id: parseInt(id) }
+            });
+
+            const deductionMonthlyMonthly = await prisma.deductionMonthlyMonthly.update({
+                where: { id: parseInt(id) },
+                data: {
+                    ...prepareDeductionMonthlyMasterDataAlt(value),
+                    month: monthDate.start,
+                }
+            });
+
+            const employeesToCreate = Array.from(empMap.keys()).map((emp_id) => {
+                const override = payloadMap.get(emp_id);
+                return {
+                    emp_id: parseInt(emp_id),
+                    deduction_amt: parseFloat(override?.deduction_amt ?? empMap.get(emp_id).deduction_amt ?? 0),
+                    installment_amt: override?.installment_amt != null ? override.installment_amt : (empMap.get(emp_id).installment_amt ?? null),
+                    interest_percentage:
+                        override?.interest_percentage != null
+                            ? override.interest_percentage
+                            : (empMap.get(emp_id).interest_percentage ?? null),
+                };
+            });
+
+            if (employeesToCreate.length) {
+                await prisma.deductionEmployeeMonthlyMonthly.createMany({
+                    data: employeesToCreate.map((emp) => ({
+                        deduction_monthly_monthly_id: parseInt(id),
+                        emp_id: emp.emp_id,
+                        deduction_amt: parseFloat(emp.deduction_amt || 0),
+                        installment_amt: emp.installment_amt,
+                        interest_percentage: emp.interest_percentage,
+                    }))
+                });
+            }
+
             return deductionMonthlyMonthly;
         });
+
         return result;
     } catch (error) {
         console.error("Error updating deductionmonthlymonthly:", error);
         throw ({ status: 400, message: error.message || `Something Went Wrong` });
     }
 };
+
 
 const deleteDeductionMonthlyMonthly = async (id) => {
     try {

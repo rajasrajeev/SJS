@@ -73,6 +73,19 @@ export const createMonthlyEarning = createAsyncThunk(
   }
 );
 
+export const updateMonthlyEarning = createAsyncThunk(
+  'earningsMonthly/updateMonthlyEarning',
+  async ({ id, payload }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch(`/earnings/monthly/${id}`, payload);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+
 export const fetchMonthlyEarnings = createAsyncThunk(
   'earningsMonthly/fetchMonthlyEarnings',
   async (query, { rejectWithValue }) => {
