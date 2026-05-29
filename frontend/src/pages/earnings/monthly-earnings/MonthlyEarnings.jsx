@@ -128,6 +128,7 @@ const MonthlyEarnings = () => {
                 show={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
                 data={selectedItem}
+        earningOptions={earningOptions}
             />
         </div>
     );
