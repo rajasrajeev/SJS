@@ -221,10 +221,13 @@ const createEarningMonthlyService = async (body) => {
   const masters = await prisma.earningMonthlyMaster.findMany({
     where: {
       earning_id: parseInt(body.earning_id),
-      ...(body.branch_id ? { branch_id: parseInt(body.branch_id) } : { branch_id: null }),
-      ...(body.department_id
-        ? { department_id: parseInt(body.department_id) }
-        : { department_id: null }),
+      ...(body.branch_id != null && {
+        branch_id: parseInt(body.branch_id)
+      }),
+
+      ...(body.department_id != null && {
+        department_id: parseInt(body.department_id)
+      }),
       // master is month-independent for processing; use master rows as defined for employees
       // but keep date filter off
     },

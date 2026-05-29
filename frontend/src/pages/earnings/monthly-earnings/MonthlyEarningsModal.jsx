@@ -47,6 +47,12 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
   // rows: { emp_id, emp_code, emp_name, earning_amt }
   const [rows, setRows] = useState([{ emp_id: '', emp_code: '', emp_name: '', earning_amt: 0 }]);
 
+  // ensure modal keeps latest response in formData so list shows saved employees
+  const ensureEmployeesToSubmit = (nextRows) => {
+    setRows(nextRows);
+    syncEmployeesFromRows(nextRows);
+  };
+
   useEffect(() => {
     if (!show) return;
 
@@ -87,8 +93,12 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
   }, [show, data]);
 
   useEffect(() => {
-    if (success && show) handleClose();
-  }, [success, show, handleClose]);
+    if (success && show) {
+      handleClose();
+      // refresh table after create/update
+      dispatch(fetchMonthlyEarnings({ page: 1, perPage: 10, search: '' }));
+    }
+  }, [success, show, handleClose, dispatch]);
 
   const syncEmployeesFromRows = (nextRows) => {
     setFormData((prev) => ({
