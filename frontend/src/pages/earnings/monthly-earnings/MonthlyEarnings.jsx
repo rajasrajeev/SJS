@@ -50,8 +50,9 @@ const MonthlyEarnings = () => {
     }, [dispatch, page, perPage, search]);
 
     useEffect(() => {
+        console.log("inside  monthly earnings ==> ",monthlyEarnings);
         // Build table rows from monthly processed data
-        const rows = (monthlyEarnings || []).map((m) => ({
+        const rows = (monthlyEarnings?.data || []).map((m) => ({
             id: m.id,
             department: m.department?.name || 'N/A',
             employeeCode: m.employees?.[0]?.employee?.emp_id || 'N/A',
