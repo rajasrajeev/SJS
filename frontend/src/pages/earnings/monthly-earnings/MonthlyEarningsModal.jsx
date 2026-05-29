@@ -1,26 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import AsyncSelect from 'react-select/async';
+
+import axiosInstance from '../../../utils/axios';
 
 import DismissableAlert from '../../../components/dashboard/miscellaneous/DismissableAlert';
 import TextInput from '../../../components/form/TextInput';
 import CustomDropdown from '../../../components/form/CustomDropdown ';
 
 import { createMonthlyEarning, updateMonthlyEarning } from '../../../features/earningsMonthlySlice';
-import { fetchEarnings } from '../../../features/earningSlice';
+
 import '../style.scss';
-
-const normalizeDropdownOptions = (list = []) => {
-  // expected: earning objects {id,name,code,...}
-  return (list || []).map((e) => ({
-    value: e.id,
-    label: e.name,
-  }));
-};
-
-
-
-
 
 const months = [
   { id: 'January', name: 'January' },
@@ -41,6 +32,8 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
   const dispatch = useDispatch();
   const { loading, error, success } = useSelector((store) => store.earningsMonthly || {});
 
+  const earningSelectOptions = useMemo(() => earningOptions || [], [earningOptions]);
+
   const [formData, setFormData] = useState({
     earning_id: '',
     month: '',
@@ -48,23 +41,23 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
     branch_id: null,
     department_id: null,
     unwanted: false,
-    employees: [],
+    employees: [], // derived from rows
   });
 
-  const [rows, setRows] = useState([]); // { emp_id, earning_amt }
+  // rows: { emp_id, emp_code, emp_name, earning_amt }
+  const [rows, setRows] = useState([{ emp_id: '', emp_code: '', emp_name: '', earning_amt: 0 }]);
 
   useEffect(() => {
     if (!show) return;
-
-    dispatch(fetchEarnings());
-
 
     if (data?.id) {
       const monthDate = data.month ? new Date(data.month) : null;
       const monthName = monthDate ? months[monthDate.getMonth()]?.name : '';
 
       const mappedRows = (data.employees || []).map((r) => ({
-        emp_id: r.emp_id,
+        emp_id: r.emp_id ?? '',
+        emp_code: r.employee?.pno || r.employee?.tno || r.emp_code || '',
+        emp_name: r.employee?.name || r.emp_name || '',
         earning_amt: r.earning_amt ?? 0,
       }));
 
@@ -75,7 +68,7 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
         branch_id: data.branch_id ?? null,
         department_id: data.department_id ?? null,
         unwanted: !!data.unwanted,
-        employees: mappedRows,
+        employees: mappedRows.map((r) => ({ emp_id: r.emp_id ? parseInt(r.emp_id) : null, earning_amt: parseFloat(r.earning_amt ?? 0) })),
       });
       setRows(mappedRows);
       return;
@@ -90,42 +83,59 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
       unwanted: false,
       employees: [],
     });
-    setRows([{ emp_id: '', earning_amt: 0 }]);
+    setRows([{ emp_id: '', emp_code: '', emp_name: '', earning_amt: 0 }]);
   }, [show, data]);
 
   useEffect(() => {
     if (success && show) handleClose();
   }, [success, show, handleClose]);
 
-  const handleRowChange = (index, e) => {
-    const { name, value } = e.target;
-    setRows((prev) => {
-      const next = [...prev];
-      next[index] = { ...next[index], [name]: value };
-      return next;
-    });
-  };
-
-  const syncEmployees = (nextRows) => {
+  const syncEmployeesFromRows = (nextRows) => {
     setFormData((prev) => ({
       ...prev,
-      employees: nextRows.map((r) => ({
-        emp_id: r.emp_id ? parseInt(r.emp_id) : null,
-        earning_amt: parseFloat(r.earning_amt ?? 0),
-      })),
+      employees: nextRows
+        .filter((r) => r.emp_id)
+        .map((r) => ({
+          emp_id: parseInt(r.emp_id),
+          earning_amt: parseFloat(r.earning_amt ?? 0),
+        })),
     }));
   };
 
   const handleAddRow = () => {
-    const next = [...rows, { emp_id: '', earning_amt: 0 }];
+    const next = [...rows, { emp_id: '', emp_code: '', emp_name: '', earning_amt: 0 }];
     setRows(next);
-    syncEmployees(next);
+    syncEmployeesFromRows(next);
   };
 
   const handleRemoveRow = (index) => {
     const next = rows.filter((_, i) => i !== index);
+    setRows(next.length ? next : [{ emp_id: '', emp_code: '', emp_name: '', earning_amt: 0 }]);
+    syncEmployeesFromRows(next);
+  };
+
+  const handleRowChange = (index, patch) => {
+    const next = [...rows];
+    next[index] = { ...next[index], ...patch };
     setRows(next);
-    syncEmployees(next);
+    syncEmployeesFromRows(next);
+  };
+
+  const fetchEmployeeList = async (inputValue) => {
+    if (!inputValue || inputValue.length <= 1) return [];
+
+    try {
+      const response = await axiosInstance.get(`/employee/mini?emp_code=${inputValue}`);
+      const list = response.data || [];
+
+      return list.map((emp) => ({
+        value: emp.id, // emp id
+        label: `${emp.pno} (${emp.name})`,
+        raw: emp,
+      }));
+    } catch (e) {
+      return [];
+    }
   };
 
   const handleSubmit = (e) => {
@@ -143,11 +153,8 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
         .map((r) => ({ emp_id: parseInt(r.emp_id), earning_amt: parseFloat(r.earning_amt ?? 0) })),
     };
 
-    if (data?.id) {
-      dispatch(updateMonthlyEarning({ id: data.id, payload }));
-    } else {
-      dispatch(createMonthlyEarning(payload));
-    }
+    if (data?.id) dispatch(updateMonthlyEarning({ id: data.id, payload }));
+    else dispatch(createMonthlyEarning(payload));
   };
 
   return (
@@ -162,10 +169,10 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
         <form onSubmit={handleSubmit}>
           <div className="row border-box">
             <div className="col-md-4 col-lg-4">
-<CustomDropdown
+              <CustomDropdown
                 label="Earning Id"
                 name="earning_id"
-                options={earningOptions}
+                options={earningSelectOptions}
                 value={formData.earning_id}
                 onChange={(e) => setFormData((p) => ({ ...p, earning_id: e.target.value }))}
                 required
@@ -184,7 +191,14 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
             </div>
 
             <div className="col-md-4 col-lg-4">
-              <TextInput label="Year" type="number" name="year" value={formData.year} onChange={(e) => setFormData((p) => ({ ...p, year: e.target.value }))} required />
+              <TextInput
+                label="Year"
+                type="number"
+                name="year"
+                value={formData.year}
+                onChange={(e) => setFormData((p) => ({ ...p, year: e.target.value }))}
+                required
+              />
             </div>
           </div>
 
@@ -193,7 +207,8 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
               <table className="table table-bordered">
                 <thead>
                   <tr>
-                    <th>Emp Id</th>
+                    <th>Employee Code</th>
+                    <th>Employee Name</th>
                     <th>Amount</th>
                     <th></th>
                   </tr>
@@ -201,36 +216,59 @@ const MonthlyEarningsModal = ({ show, handleClose, data, earningOptions = [] }) 
                 <tbody>
                   {rows.map((row, index) => (
                     <tr key={index} style={{ height: '30px' }}>
+                      <td style={{ width: 260 }}>
+                        <AsyncSelect
+                          cacheOptions
+                          defaultOptions
+                          loadOptions={fetchEmployeeList}
+                          value={
+                            row.emp_id
+                              ? {
+                                  value: row.emp_id,
+                                  label: `${row.emp_code || ''}${row.emp_name ? ` (${row.emp_name})` : ''}`.trim(),
+                                }
+                              : null
+                          }
+                          onChange={(selected) => {
+                            const emp = selected?.raw || {};
+                            handleRowChange(index, {
+                              emp_id: selected?.value ?? '',
+                              emp_code: emp.pno || emp.tno || selected?.label || '',
+                              emp_name: emp.name || '',
+                            });
+                          }}
+                          placeholder="Emp code"
+                          className="tbl"
+                        />
+                      </td>
+
                       <td>
                         <input
-                          type="number"
-                          name="emp_id"
-                          value={row.emp_id ?? ''}
-                          onChange={(e) => {
-                            handleRowChange(index, e);
-                            const next = [...rows];
-                            next[index] = { ...next[index], emp_id: e.target.value };
-                            syncEmployees(next);
-                          }}
+                          type="text"
+                          name="emp_name"
+                          value={row.emp_name ?? ''}
+                          readOnly
                           className="form-control tbl"
                         />
                       </td>
+
                       <td>
                         <input
                           type="number"
                           name="earning_amt"
                           value={row.earning_amt ?? 0}
-                          onChange={(e) => {
-                            handleRowChange(index, e);
-                            const next = [...rows];
-                            next[index] = { ...next[index], earning_amt: e.target.value };
-                            syncEmployees(next);
-                          }}
+                          onChange={(e) => handleRowChange(index, { earning_amt: e.target.value })}
                           className="form-control tbl"
                         />
                       </td>
+
                       <td>
-                        <button type="button" disabled={index === 0} className="action-button" onClick={() => handleRemoveRow(index)}>
+                        <button
+                          type="button"
+                          disabled={index === 0}
+                          className="action-button"
+                          onClick={() => handleRemoveRow(index)}
+                        >
                           <i className="bx bx-trash" style={index === 0 ? { color: 'lightgrey' } : { color: 'red' }}></i>
                         </button>
                       </td>

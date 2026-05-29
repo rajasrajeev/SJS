@@ -3,7 +3,8 @@ import BackendTable from '../../../components/table/BackendTable';
 import PageTitle from '../../../components/dashboard/PageTitle';
 import MonthlyEarningsModal from './MonthlyEarningsModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMonthlyEarningMasters, fetchMonthlyEarningMasterDetails } from '../../../features/earningsMonthlySlice';
+import { fetchMonthlyEarnings } from '../../../features/earningsMonthlySlice';
+
 
 const MonthlyEarnings = () => {
     const [data, setData] = useState([]);
@@ -30,11 +31,12 @@ const MonthlyEarnings = () => {
     ];
 
     const dispatch = useDispatch();
-    const { monthlyEarningMasters } = useSelector((store) => store.earningsMonthly || {});
+    const { monthlyEarnings } = useSelector((store) => store.earningsMonthly || {});
+
 
     useEffect(() => {
         dispatch(
-            fetchMonthlyEarningMasters({
+            fetchMonthlyEarnings({
                 page,
                 perPage,
                 search,
@@ -43,19 +45,20 @@ const MonthlyEarnings = () => {
     }, [dispatch, page, perPage, search]);
 
     useEffect(() => {
-        // Build table rows from master data
-        const rows = (monthlyEarningMasters?.data || []).map((m) => ({
+        // Build table rows from monthly processed data
+        const rows = (monthlyEarnings?.data || []).map((m) => ({
             id: m.id,
             department: m.department?.name,
-            employeeCode: m.employees?.[0]?.employee?.emp_id, // fallback for existing table shape
+            employeeCode: m.employees?.[0]?.employee?.emp_id,
             employeeName: m.employees?.[0]?.employee?.name,
             earningName: m.earning?.name,
             earningAmount: m.employees?.[0]?.earning_amt,
         }));
         setData(rows);
         setFilteredData(rows);
-        setTotal(monthlyEarningMasters?.meta?.total || 0);
-    }, [monthlyEarningMasters]);
+        setTotal(monthlyEarnings?.meta?.total || 0);
+    }, [monthlyEarnings]);
+
 
     const handleSearch = () => {
         if (search) {
@@ -125,7 +128,6 @@ const MonthlyEarnings = () => {
                 show={isModalOpen}
                 handleClose={() => setIsModalOpen(false)}
                 data={selectedItem}
-        earningOptions={earningOptions}
             />
         </div>
     );

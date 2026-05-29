@@ -87,7 +87,7 @@ const MasterEarnings = () => {
   return (
     <>
       <div className='mt-4'>
-        <PageTitle title="Monthly Earning" iname="bx bx-cog" />
+        <PageTitle title="Master Earnings" iname="bx bx-cog" />
 
         <BackendTable
           columns={columns}
