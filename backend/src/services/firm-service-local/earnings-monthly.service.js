@@ -56,6 +56,7 @@ const getEarningMonthlyMasterService = async (query) => {
   const where = buildWhere(query, 'master');
   const page = parseInt(query.page || '1', 10);
   const perPage = parseInt(query.perPage || '10', 10);
+  console.log(Object.keys(prisma).filter(k => k.toLowerCase().includes('earning')));
 
   const data = await prisma.earningMonthlyMaster.findMany({
     where,
