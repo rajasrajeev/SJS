@@ -1,6 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../utils/axios';
 
+export const fetchDaConstants = createAsyncThunk(
+  'da/fetchDaConstants',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get('/master/da_constants');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
 
 export const fetchShopDaMaster = createAsyncThunk(
   'da/fetchShopDaMaster',
@@ -244,6 +255,8 @@ export const updateFabDaMaster = createAsyncThunk(
       }
     }
   );
+
+
 
 const daSlice = createSlice({
   name: 'da',
