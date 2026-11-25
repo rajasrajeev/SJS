@@ -13,6 +13,20 @@ export const fetchDaConstants = createAsyncThunk(
   }
 );
 
+export const fetchDaPoints = createAsyncThunk(
+  'da/fetchDaPoints',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get('/da/points');
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data || error.message
+      );
+    }
+  }
+);
+
 export const fetchShopDaMaster = createAsyncThunk(
   'da/fetchShopDaMaster',
   async (_, { rejectWithValue }) => {
