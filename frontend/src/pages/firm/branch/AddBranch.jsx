@@ -5,7 +5,7 @@ import PageTitle from '../../../components/dashboard/PageTitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCountries, fetchStates, fetchDistricts, clearDistricts } from '../../../features/locationSlice';
 import "../firm-profile/FirmProfileUpdate.scss"
-import CustomDropdown from "../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../components/form/CustomDropdown";
 import DismissableAlert from "../../../components/dashboard/miscellaneous/DismissableAlert";
 import RichTextField from "../../../components/form/RichTextField";
 import { createBranch, updateBranch } from "../../../features/branchSlice";

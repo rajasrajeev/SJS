@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import CustomDropdown from '../form/CustomDropdown ';
+import CustomDropdown from '../form/CustomDropdown';
 import { fetchDesignations } from '../../features/designationSlice';
 import { fetchDepartments } from '../../features/departmentSlice';
 import { fetchBranches } from '../../features/branchSlice';

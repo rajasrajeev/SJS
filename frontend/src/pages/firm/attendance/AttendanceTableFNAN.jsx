@@ -6,7 +6,7 @@ import PageTitle from "../../../components/dashboard/PageTitle";
 import CustomAttendanceTable from "../../../components/table/CustomAttendanceTable";
 
 import { useNavigate } from "react-router-dom";
-import CustomDropdown from "../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../components/form/CustomDropdown";
 
 const AttendanceTableFNAN = () => {
     const dispatch = useDispatch();

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PageTitle from '../../../components/dashboard/PageTitle';
 import './AddAttendanceModal.scss';
 import { useNavigate } from 'react-router-dom';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 
 
 const employeeData = [

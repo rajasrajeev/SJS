@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import './CustomTable.scss';
 import SearchDropdowns from './SearchDropdowns';
-import CustomDropdown from '../form/CustomDropdown ';
+import CustomDropdown from '../form/CustomDropdown';
 
 
 const BackendTable = ({

@@ -8,7 +8,7 @@ import DismissableAlert from '../../../components/dashboard/miscellaneous/Dismis
 import UpdateModal from './UpdateModal';
 import ConfirmationDialog from '../../../components/dashboard/miscellaneous/AlertDialogs/ConfirmationDialog';
 import { time, days } from '../../../utils/timeAndDays';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 
 const ShiftMaster = () => {
   const dispatch = useDispatch();

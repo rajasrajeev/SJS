@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import TextInput from "../../../../components/form/TextInput";
 import DatePicker from "../../../../components/form/DatePicker";
-import CustomDropdown from "../../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../../components/form/CustomDropdown";
 import { fetchDesignations } from "../../../../features/designationSlice";
 import { useDispatch, useSelector } from 'react-redux';
 import { datePickerFormats } from "../../../../utils/dateFormat";

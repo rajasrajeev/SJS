@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TextInput from '../../../components/form/TextInput';
 import DismissableAlert from '../../../components/dashboard/miscellaneous/DismissableAlert';
 import { updateOvertime } from '../../../features/overtimeSlice';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 
 
 const OvertimeUpdateModal = ({ show, handleClose, data, options }) => {

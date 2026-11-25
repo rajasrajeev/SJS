@@ -3,7 +3,7 @@ import TextInput from '../../../components/form/TextInput';
 import DatePicker from '../../../components/form/DatePicker';
 import CustomTable from '../../../components/table/CustomTable';
 import PageTitle from '../../../components/dashboard/PageTitle';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDepartments } from '../../../features/departmentSlice';
 import { clearDesignation, createDesignation, deleteDesignation, fetchDesignations } from '../../../features/designationSlice';

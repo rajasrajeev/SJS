@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import CustomDropdown from "../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../components/form/CustomDropdown";
 import TextInput from "../../../components/form/TextInput";
 import CustomTable from "../../../components/table/CustomTable";
 import PageTitle from "../../../components/dashboard/PageTitle";

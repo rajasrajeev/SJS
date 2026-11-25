@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import PageTitle from '../../../components/dashboard/PageTitle';
 import BackendTable from '../../../components/table/BackendTable';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 
 
 const AttendanceTable = () => {

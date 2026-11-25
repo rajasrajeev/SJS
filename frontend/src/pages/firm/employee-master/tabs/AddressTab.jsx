@@ -5,7 +5,7 @@ import ImageUpload from "../../../../components/form/ImageUpload";
 import DefaultLogo from "../../../../assets/100.png";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCountries, fetchStates } from "../../../../features/locationSlice";
-import CustomDropdown from "../../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../../components/form/CustomDropdown";
 
 const AddressTab = ({ formData, onChange }) => {
   const dispatch = useDispatch();

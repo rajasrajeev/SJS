@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import TextInput from "../../../components/form/TextInput";
 import CustomTable from "../../../components/table/CustomTable";
 import PageTitle from "../../../components/dashboard/PageTitle";
-import CustomDropdown from "../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../components/form/CustomDropdown";
 import { useDispatch, useSelector } from 'react-redux';
 import { clearEarning, createEarning, deleteEarning, fetchEarnings } from "../../../features/earningSlice";
 import CheckBox from '../../../components/form/CheckBox';

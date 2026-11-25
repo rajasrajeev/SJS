@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import BackendTable from '../../components/table/BackendTable';
 import { fetchAdvanceDeductions, deleteAdvanceDeduction } from '../../features/advanceDeductionSlice';
 import ConfirmationDialog from '../../components/dashboard/miscellaneous/AlertDialogs/ConfirmationDialog';
-import CustomDropdown from '../../components/form/CustomDropdown ';
+import CustomDropdown from '../../components/form/CustomDropdown';
 import { fetchMasterDeductions } from '../../features/deductionMasterSlice';
 import AdvanceDeductionModal from './AdvanceDeductionModal';
 

@@ -6,7 +6,7 @@ import PageTitle from '../../../components/dashboard/PageTitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCountries, fetchStates, fetchDistricts, clearDistricts } from '../../../features/locationSlice';
 import "./FirmProfileUpdate.scss"
-import CustomDropdown from "../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../components/form/CustomDropdown";
 import DefaultLogo from '../../../assets/100.png';
 import { clearFirm, fetchFirm, updateFirm } from "../../../features/firmSlice";
 import { datePickerFormat } from "../../../utils/dateFormat";

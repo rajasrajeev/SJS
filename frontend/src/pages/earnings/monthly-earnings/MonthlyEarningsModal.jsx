@@ -7,7 +7,7 @@ import axiosInstance from '../../../utils/axios';
 
 import DismissableAlert from '../../../components/dashboard/miscellaneous/DismissableAlert';
 import TextInput from '../../../components/form/TextInput';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 
 import { createMonthlyEarning, updateMonthlyEarning, fetchMonthlyEarnings } from '../../../features/earningsMonthlySlice';
 

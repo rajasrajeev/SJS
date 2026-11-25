@@ -4,7 +4,7 @@ import Alert from 'react-bootstrap/Alert';
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBranches } from '../../../features/branchSlice';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 
 

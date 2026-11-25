@@ -9,7 +9,7 @@ import { fetchBranches } from '../../../features/branchSlice';
 import ShopDaModal from './ShopDaModal';
 import FabDaModal from './FabDaModal';
 import IDaModal from './IDaModal';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 import CustomRadioButtonGroup from '../../../components/form/CustomRadioButton';
 
 

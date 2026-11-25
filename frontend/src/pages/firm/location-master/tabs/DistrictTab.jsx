@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import RichTextField from '../../../../components/form/RichTextField';
 import CustomTable from '../../../../components/table/CustomTable';
-import CustomDropdown from '../../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../../components/form/CustomDropdown';
 import { dateFormat } from '../../../../utils/dateFormat';
 import { useDispatch, useSelector } from 'react-redux';
 import {

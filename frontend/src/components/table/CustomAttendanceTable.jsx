@@ -1,6 +1,6 @@
 import React from "react";
 import DataTable from "react-data-table-component";
-import CustomDropdown from "../form/CustomDropdown ";
+import CustomDropdown from "../form/CustomDropdown";
 
 //import "./AttendanceTable.scss";
 

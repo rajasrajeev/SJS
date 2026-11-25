@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import DismissableAlert from '../../../components/dashboard/miscellaneous/DismissableAlert';
 import TextInput from '../../../components/form/TextInput';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 
 import { createMonthlyEarningMaster, updateMonthlyEarningMaster, fetchMonthlyEarningMasterDetails } from '../../../features/earningsMonthlySlice';
 

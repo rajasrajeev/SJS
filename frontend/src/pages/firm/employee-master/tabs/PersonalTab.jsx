@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import TextInput from "../../../../components/form/TextInput";
 import RichTextField from "../../../../components/form/RichTextField";
 import DatePicker from "../../../../components/form/DatePicker";
-import CustomDropdown from "../../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../../components/form/CustomDropdown";
 import CustomRadioButtonGroup from "../../../../components/form/CustomRadioButton";
 import { fetchDesignations } from "../../../../features/designationSlice";
 import { useDispatch, useSelector } from 'react-redux';

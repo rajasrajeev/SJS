@@ -6,7 +6,7 @@ import BackendTable from '../../components/table/BackendTable';
 import { fetchMasterDeductions } from '../../features/deductionMasterSlice';
 import ConfirmationDialog from '../../components/dashboard/miscellaneous/AlertDialogs/ConfirmationDialog';
 import MasterDeductionModal from './MasterDeductionModal';
-import CustomDropdown from '../../components/form/CustomDropdown ';
+import CustomDropdown from '../../components/form/CustomDropdown';
 import { deleteDeduction, fetchDeductions } from '../../features/deductionSlice';
 import { fetchEmployees } from '../../features/employeeSlice';
 import { fetchDepartments } from '../../features/departmentSlice';

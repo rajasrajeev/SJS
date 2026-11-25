@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TextInput from '../../../components/form/TextInput';
 import DismissableAlert from '../../../components/dashboard/miscellaneous/DismissableAlert';
 import { updateDepartment } from '../../../features/departmentSlice';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 import DatePicker from '../../../components/form/DatePicker';
 import { dateFormatFromString } from '../../../utils/dateFormat';
 import { updateDesignation } from '../../../features/designationSlice';

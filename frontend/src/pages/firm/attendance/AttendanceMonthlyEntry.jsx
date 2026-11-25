@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PageTitle from "../../../components/dashboard/PageTitle";
 import BackendTable from "../../../components/table/BackendTable";
 import "./AttendanceMonthlyEntry.scss";
-import CustomDropdown from "../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../components/form/CustomDropdown";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEmployees } from "../../../features/employeeSlice";

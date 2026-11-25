@@ -5,7 +5,7 @@ import AsyncSelect from "react-select/async";
 
 import DismissableAlert from '../../components/dashboard/miscellaneous/DismissableAlert';
 import { updateAdvanceDeduction, createAdvanceDeduction } from '../../features/advanceDeductionSlice';
-import CustomDropdown from '../../components/form/CustomDropdown ';
+import CustomDropdown from '../../components/form/CustomDropdown';
 import TextInput from '../../components/form/TextInput';
 import axiosInstance from '../../utils/axios';
 

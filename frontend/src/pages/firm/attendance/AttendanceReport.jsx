@@ -4,7 +4,7 @@ import BackendTable from '../../../components/table/BackendTable';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import autoTable from 'jspdf-autotable'; 
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 import PageTitle from '../../../components/dashboard/PageTitle';
 
 const AttendanceReport = () => {

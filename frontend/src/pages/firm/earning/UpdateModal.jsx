@@ -3,7 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import TextInput from '../../../components/form/TextInput';
 import DismissableAlert from '../../../components/dashboard/miscellaneous/DismissableAlert';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 import CheckBox from '../../../components/form/CheckBox';
 import { updateEarning } from '../../../features/earningSlice';
 

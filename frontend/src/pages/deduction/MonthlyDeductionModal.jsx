@@ -6,7 +6,7 @@ import AsyncSelect from "react-select/async";
 
 import DismissableAlert from '../../components/dashboard/miscellaneous/DismissableAlert';
 import { updateMonthlyDeduction, createMonthlyDeduction } from '../../features/monthlyDeductionSlice';
-import CustomDropdown from '../../components/form/CustomDropdown ';
+import CustomDropdown from '../../components/form/CustomDropdown';
 import TextInput from '../../components/form/TextInput';
 import './style.scss';
 import axiosInstance from '../../utils/axios';

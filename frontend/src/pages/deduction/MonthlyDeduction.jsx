@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import BackendTable from '../../components/table/BackendTable';
 import { fetchMonthlyDeductions, deleteMonthlyDeduction } from '../../features/monthlyDeductionSlice';
 import ConfirmationDialog from '../../components/dashboard/miscellaneous/AlertDialogs/ConfirmationDialog';
-import CustomDropdown from '../../components/form/CustomDropdown ';
+import CustomDropdown from '../../components/form/CustomDropdown';
 import { fetchMasterDeductions } from '../../features/deductionMasterSlice';
 import MonthlyDeductionModal from './MonthlyDeductionModal';
 import { fetchEmployees } from '../../features/employeeSlice';

@@ -10,7 +10,7 @@ import {
   clearStates,
   clearDistricts,
 } from "../../../features/locationSlice";
-import CustomDropdown from "../../../components/form/CustomDropdown ";
+import CustomDropdown from "../../../components/form/CustomDropdown";
 import DismissableAlert from "../../../components/dashboard/miscellaneous/DismissableAlert";
 import { clearBranch } from "../../../features/branchSlice";
 

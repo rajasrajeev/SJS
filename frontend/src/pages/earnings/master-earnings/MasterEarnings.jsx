@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import BackendTable from '../../../components/table/BackendTable';
 import ConfirmationDialog from '../../../components/dashboard/miscellaneous/AlertDialogs/ConfirmationDialog';
 
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 import MasterEarningModal from './MasterEarningModal';
 
 import { deleteMonthlyEarningMaster, fetchMonthlyEarningMasters } from '../../../features/earningsMonthlySlice';

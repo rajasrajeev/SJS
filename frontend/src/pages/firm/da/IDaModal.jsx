@@ -3,7 +3,7 @@ import { Modal, Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import DismissableAlert from '../../../components/dashboard/miscellaneous/DismissableAlert';
 import { createShopDa } from '../../../features/daSlice';
-import CustomDropdown from '../../../components/form/CustomDropdown ';
+import CustomDropdown from '../../../components/form/CustomDropdown';
 import TextInput from '../../../components/form/TextInput';
 import { months, years } from '../../../utils/timeAndDays';
 import DatePicker from '../../../components/form/DatePicker';
