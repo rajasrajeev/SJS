@@ -21,7 +21,7 @@ export const fetchPermissions = createAsyncThunk(
   }
 );
 
-
+export const getOwnModules = (state) => state.permissions.menu;
 const permissionSlice = createSlice({
   name: 'permissions',
   initialState,
